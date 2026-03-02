@@ -54,9 +54,9 @@ final class TicketSeeder extends Seeder
         foreach (range(1, 5) as $i) {
             $ticket = Ticket::query()->create([
                 'requester_id' => $requesters->random()->id,
-                'status' => TicketStatus::New ,
+                'status' => TicketStatus::New,
                 'priority' => TicketPriority::Medium,
-                'title' => 'Question about feature ' . $i,
+                'title' => 'Question about feature '.$i,
                 'body' => 'I am having trouble finding where the new export button is.',
                 'category_id' => null,
                 'assigned_to' => null,
@@ -71,9 +71,9 @@ final class TicketSeeder extends Seeder
 
             $ticket = Ticket::query()->create([
                 'requester_id' => $requesters->random()->id,
-                'status' => TicketStatus::New ,
+                'status' => TicketStatus::New,
                 'priority' => TicketPriority::High,
-                'title' => 'URGENT: Broken link ' . $i,
+                'title' => 'URGENT: Broken link '.$i,
                 'body' => 'This page is returning a 404 error and I need it fixed now.',
                 'category_id' => $categories->random()->id,
                 'assigned_to' => null,
@@ -96,8 +96,8 @@ final class TicketSeeder extends Seeder
                 'category_id' => $categories->random()->id,
                 'status' => $status,
                 'priority' => $priority,
-                'title' => 'Random support request #' . $i,
-                'body' => 'Detailed description of issue #' . $i . ' requiring agent attention.',
+                'title' => 'Random support request #'.$i,
+                'body' => 'Detailed description of issue #'.$i.' requiring agent attention.',
                 'first_responded_at' => $status !== TicketStatus::New ? now()->subHours(2) : null,
                 'resolved_at' => $status === TicketStatus::Resolved ? now() : null,
             ]);
@@ -119,8 +119,8 @@ final class TicketSeeder extends Seeder
             TicketMessage::query()->create([
                 'ticket_id' => $ticket->id,
                 'author_id' => $authorId,
-                'type' => $isInternal ? TicketMessageType::Internal : TicketMessageType::Public ,
-                'body' => 'Discussion message #' . $i . ' for ticket context.',
+                'type' => $isInternal ? TicketMessageType::Internal : TicketMessageType::Public,
+                'body' => 'Discussion message #'.$i.' for ticket context.',
             ]);
         }
     }
