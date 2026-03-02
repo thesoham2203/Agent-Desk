@@ -1,9 +1,15 @@
 {
     "agents": [
         "claude_code",
+        "codex",
         "cursor",
+        "gemini",
         "opencode",
         "phpstorm"
     ],
-    "guidelines": []
+    "editors": [
+        "vscode"
+    ],
+    "guidelines": [],
+    "herd_mcp": true
 }
