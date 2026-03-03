@@ -19,7 +19,7 @@
         "larastan/larastan": "^3.9.3",
         "laravel/boost": "^1.8.11",
         "laravel/pail": "^1.2.6",
-        "laravel/pint": "^1.27.1",
+        "laravel/pint": "*",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^8.9.1",
         "pestphp/pest": "^4.4.1",

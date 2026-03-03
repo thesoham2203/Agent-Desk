@@ -80,7 +80,55 @@ php artisan tinker
 
 ## Day 3 — Roles & Policies
 
-[To be filled in after Day 2 is complete]
+**Goal:** Understand how Laravel authorizes actions using Policies before writing any UI or API routes.
+
+### What you will build:
+- app/Policies/TicketPolicy.php
+- app/Policies/TicketMessagePolicy.php
+- app/Policies/AttachmentPolicy.php
+- app/Policies/CategoryPolicy.php
+- app/Policies/MacroPolicy.php
+- app/Policies/SlaConfigPolicy.php
+- app/Policies/KbArticlePolicy.php
+- app/Policies/AiRunPolicy.php
+- app/Policies/AuditLogPolicy.php
+- app/Providers/AppServiceProvider.php
+- tests/Feature/Policies/TicketPolicyTest.php
+- tests/Feature/Policies/TicketMessagePolicyTest.php
+- tests/Feature/Policies/AttachmentPolicyTest.php
+- tests/Feature/Policies/AdminPolicyTest.php
+
+### Files to read in order (follow the linked list in each file):
+
+1. [app/Policies/TicketPolicy.php](app/Policies/TicketPolicy.php) → Learn: Laravel Policies
+2. [app/Policies/TicketMessagePolicy.php](app/Policies/TicketMessagePolicy.php)
+3. [app/Policies/AttachmentPolicy.php](app/Policies/AttachmentPolicy.php)
+4. [app/Policies/CategoryPolicy.php](app/Policies/CategoryPolicy.php)
+5. [app/Policies/MacroPolicy.php](app/Policies/MacroPolicy.php)
+6. [app/Policies/SlaConfigPolicy.php](app/Policies/SlaConfigPolicy.php)
+7. [app/Policies/KbArticlePolicy.php](app/Policies/KbArticlePolicy.php)
+8. [app/Policies/AiRunPolicy.php](app/Policies/AiRunPolicy.php)
+9. [app/Policies/AuditLogPolicy.php](app/Policies/AuditLogPolicy.php) → Learn: before() hooks
+10. [app/Providers/AppServiceProvider.php](app/Providers/AppServiceProvider.php) → Learn: policy registration
+11. [tests/Feature/Policies/TicketPolicyTest.php](tests/Feature/Policies/TicketPolicyTest.php) → Learn: feature tests
+12. [tests/Feature/Policies/TicketMessagePolicyTest.php](tests/Feature/Policies/TicketMessagePolicyTest.php)
+13. [tests/Feature/Policies/AttachmentPolicyTest.php](tests/Feature/Policies/AttachmentPolicyTest.php)
+14. [tests/Feature/Policies/AdminPolicyTest.php](tests/Feature/Policies/AdminPolicyTest.php)
+
+### Terminal commands to run after reading:
+
+```bash
+php artisan test --compact tests/Feature/Policies/
+composer test:types
+```
+
+### How to verify Day 3 is complete:
+
+- All policy feature tests pass
+- composer test:types passes with no errors
+- A Requester trying to view another user's ticket → denied
+- A SupportAgent can view unassigned New tickets
+- An Admin can do everything
 
 ## Day 4 — Requester Ticket Flow
 
