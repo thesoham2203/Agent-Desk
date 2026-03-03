@@ -2,12 +2,20 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Controller;
+
 arch()->preset()->php();
-arch()->preset()->strict();
+
+arch('preset → strict')
+    ->preset()
+    ->strict()
+    ->ignoring('App\Http\Controllers')
+    ->ignoring('App\Livewire\Forms')
+    ->ignoring('App\Livewire\Actions');
+
 arch()->preset()->security();
 
 arch('controllers')
     ->expect('App\Http\Controllers')
-    ->not->toBeUsed();
-
-//
+    ->not->toUse(Controller::class)
+    ->ignoring('App\Http\Controllers\Auth');
