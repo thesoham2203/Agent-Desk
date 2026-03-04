@@ -49,6 +49,18 @@ return [
             'report' => false,
         ],
 
+        /*
+         * Private disk — used for secure attachment storage.
+         * Files stored here have NO public URL. The only way to serve them
+         * is through AttachmentController which enforces policy authorization.
+         */
+        'private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private'),
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -62,6 +62,25 @@
                             </span>
                         </dd>
                     </div>
+
+                    <!-- Attachments -->
+                    @if($ticket->attachments->count() > 0)
+                        <div class="sm:col-span-2 border-t border-gray-100 pt-4">
+                            <dt class="text-sm font-medium text-gray-500">Ticket Attachments</dt>
+                            <dd class="mt-2 flex flex-wrap gap-2">
+                                @foreach($ticket->attachments as $attachment)
+                                    <a href="{{ route('attachments.download', $attachment) }}"
+                                        class="inline-flex items-center px-3 py-1 rounded-md bg-gray-100 text-xs font-medium text-gray-700 hover:bg-gray-200">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        {{ $attachment->original_name }} ({{ number_format($attachment->size / 1024, 1) }} KB)
+                                    </a>
+                                @endforeach
+                            </dd>
+                        </div>
+                    @endif
                 </dl>
             </div>
         </div>
@@ -121,6 +140,22 @@
                             </div>
                         </div>
                         <div class="text-gray-700 whitespace-pre-wrap">{{ $message->body }}</div>
+
+                        @if($message->attachments->count() > 0)
+                            <div
+                                class="mt-4 pt-3 border-t @if($message->type === \App\Enums\TicketMessageType::Internal) border-amber-200 @else border-gray-100 @endif flex flex-wrap gap-2">
+                                @foreach($message->attachments as $attachment)
+                                    <a href="{{ route('attachments.download', $attachment) }}"
+                                        class="inline-flex items-center px-2 py-1 rounded-md bg-white border @if($message->type === \App\Enums\TicketMessageType::Internal) border-amber-300 text-amber-700 hover:bg-amber-100 @else border-gray-200 text-gray-700 hover:bg-gray-50 @endif text-xs font-medium transition-colors">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        {{ $attachment->original_name }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 @endforeach
             </div>
@@ -172,6 +207,24 @@
                         <div class="text-error text-sm mt-1">
                             @error('replyBody') <span class="text-red-600">{{ $message }}</span> @enderror
                         </div>
+                    @endif
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Attachments</label>
+                    <input type="file" wire:model="replyAttachments" multiple
+                        accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx,.txt,.zip"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold {{ $showInternalNoteForm ? 'file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200' : 'file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100' }}" />
+
+                    @error('replyAttachments.*')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+
+                    @if(count($this->replyAttachments) > 0)
+                        <p
+                            class="mt-2 text-sm {{ $showInternalNoteForm ? 'text-amber-600' : 'text-indigo-600' }} font-medium">
+                            {{ count($this->replyAttachments) }} file(s) selected
+                        </p>
                     @endif
                 </div>
 

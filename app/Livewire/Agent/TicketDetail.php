@@ -8,6 +8,7 @@ use App\Actions\AddInternalNoteAction;
 use App\Actions\AssignTicketAction;
 use App\Actions\ChangeTicketStatusAction;
 use App\Actions\PostReplyAction;
+use App\Actions\StoreAttachmentAction;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use App\Models\AuditLog;
@@ -16,10 +17,12 @@ use App\Models\TicketMessage;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /**
  * ============================================================
@@ -44,6 +47,8 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 final class TicketDetail extends Component
 {
+    use WithFileUploads;
+
     /**
      * The loaded Ticket model.
      */
@@ -87,15 +92,25 @@ final class TicketDetail extends Component
     public bool $noteSaved = false;
 
     /**
+     * The files attached to the reply or note.
+     *
+     * @var array<int, UploadedFile>
+     */
+    #[Validate(['replyAttachments.*' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,gif,doc,docx,xls,xlsx,txt,zip'])]
+    public array $replyAttachments = [];
+
+    /**
      * Component Initialization. Load ticket relations and auth checks.
      */
     public function mount(Ticket $ticket): void
     {
         $this->ticket = Ticket::with([
             'messages.author',
+            'messages.attachments',
             'category',
             'requester',
             'assignee',
+            'attachments',
         ])->findOrFail($ticket->id);
 
         $this->authorize('view', $this->ticket);
@@ -112,7 +127,7 @@ final class TicketDetail extends Component
     #[Computed]
     public function threadMessages(): Collection
     {
-        return $this->ticket->messages()->with('author')->oldest()->get();
+        return $this->ticket->messages()->with(['author', 'attachments'])->oldest()->get();
     }
 
     /**
@@ -127,15 +142,27 @@ final class TicketDetail extends Component
         /** @var User $user */
         $user = auth()->user();
 
-        resolve(PostReplyAction::class)->execute(
+        $message = resolve(PostReplyAction::class)->execute(
             $user,
             $this->ticket,
             $this->replyBody
         );
 
+        // Store each uploaded file as an Attachment
+        foreach ($this->replyAttachments as $file) {
+            /** @var UploadedFile $file */
+            resolve(StoreAttachmentAction::class)->execute(
+                $this->ticket,
+                $message,
+                $file
+            );
+        }
+
         $this->replyBody = '';
+        $this->replyAttachments = [];
         $this->replySent = true;
 
+        $this->ticket->load(['messages.author', 'messages.attachments', 'attachments']);
         $this->ticket->refresh();
     }
 
@@ -151,15 +178,27 @@ final class TicketDetail extends Component
         /** @var User $user */
         $user = auth()->user();
 
-        resolve(AddInternalNoteAction::class)->execute(
+        $message = resolve(AddInternalNoteAction::class)->execute(
             $user,
             $this->ticket,
             $this->noteBody
         );
 
+        // Store each uploaded file as an Attachment
+        foreach ($this->replyAttachments as $file) {
+            /** @var UploadedFile $file */
+            resolve(StoreAttachmentAction::class)->execute(
+                $this->ticket,
+                $message,
+                $file
+            );
+        }
+
         $this->noteBody = '';
+        $this->replyAttachments = [];
         $this->noteSaved = true;
 
+        $this->ticket->load(['messages.author', 'messages.attachments', 'attachments']);
         $this->ticket->refresh();
     }
 

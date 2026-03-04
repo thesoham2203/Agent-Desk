@@ -247,9 +247,62 @@ composer test
 - composer test:types passes
 - All Day 6 feature tests pass
 
-## Day 7 — Scheduler + Notifications
+## Day 7 — Attachments & Private Storage
 
-[To be filled in after Day 6 is complete]
+### Goal:
+Implement secure file upload and download. Files are stored
+on the private disk and can only be downloaded by authorized users.
+No file has a public URL — all downloads go through a policy check.
+
+### What you will build:
+- app/Actions/StoreAttachmentAction.php
+- app/Http/Controllers/AttachmentController.php
+- Updates to TicketCreateForm (add file upload)
+- Updates to Requester/TicketDetail (add file upload on reply)
+- Updates to Agent/TicketDetail (add file upload on reply)
+- routes/web.php (attachment download route)
+- tests/Feature/Attachments/AttachmentUploadTest.php
+- tests/Feature/Attachments/AttachmentDownloadTest.php
+
+### Core concepts you will learn:
+- Storage::disk('private') vs Storage::disk('public')
+  Private = not web accessible, Public = has a URL
+- response()->download() vs response()->file()
+  Streams files from private storage through Laravel
+- Why file downloads need a Controller not a Livewire component
+  (Livewire returns JSON updates, not file streams)
+- Storage::fake('private') in tests
+  Prevents real files being written during tests
+
+### Files to read in order:
+1. app/Actions/StoreAttachmentAction.php
+2. app/Http/Controllers/AttachmentController.php
+3. app/Livewire/Requester/TicketCreateForm.php (updated)
+4. app/Livewire/Requester/TicketDetail.php (updated)
+5. app/Livewire/Agent/TicketDetail.php (updated)
+6. routes/web.php
+7. tests/Feature/Attachments/AttachmentUploadTest.php
+8. tests/Feature/Attachments/AttachmentDownloadTest.php
+
+### Terminal commands to run:
+```bash
+php artisan migrate:fresh --seed
+php artisan serve
+# Log in as requester@agentdesk.test
+# Create a ticket with a file attachment
+# Download the attachment — should work
+# Log in as different requester — try to download → 403
+composer test:types
+composer test
+```
+
+### How to verify Day 7 is complete:
+- File uploads work on ticket create form
+- Files are stored in storage/app/private (NOT storage/app/public)
+- Downloading own attachment works
+- Downloading another user's attachment returns 403
+- Storage::fake() used in all attachment tests
+- composer test:types passes
 
 ## Day 8 — AI Subsystem: TriageAgent
 
