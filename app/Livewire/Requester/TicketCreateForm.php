@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -40,6 +41,7 @@ use Livewire\Component;
  * attribute simplifies validation directly on the properties.
  * ============================================================
  */
+#[Layout('layouts.app')]
 final class TicketCreateForm extends Component
 {
     /**
