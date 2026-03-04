@@ -132,7 +132,61 @@ composer test:types
 
 ## Day 4 — Requester Ticket Flow
 
-[To be filled in after Day 3 is complete]
+### Goal:
+Build the complete requester experience — create tickets,
+view their own ticket list, read thread, post replies.
+
+### What you will build:
+- app/Actions/CreateTicketAction.php
+- app/Actions/PostReplyAction.php
+- app/Livewire/Requester/TicketCreateForm.php
+- app/Livewire/Requester/MyTicketsTable.php
+- app/Livewire/Requester/TicketDetail.php
+- resources/views/livewire/requester/ticket-create-form.blade.php
+- resources/views/livewire/requester/my-tickets-table.blade.php
+- resources/views/livewire/requester/ticket-detail.blade.php
+- routes/web.php (requester route group)
+
+### The core Livewire concepts you will learn:
+- public properties = state (wire:model binds them to inputs)
+- #[Validate] = validation rules as PHP attributes
+- mount($id) = runs once when component loads (like a constructor)
+- wire:submit = calls a PHP method when form is submitted
+- wire:click = calls a PHP method when button is clicked
+- wire:poll.3s = re-renders component every 3 seconds (used later for AI)
+- $this->authorize() = checks the Policy before doing anything
+- dispatch() = fires an event to other Livewire components
+
+### Files to read in order:
+1. app/Actions/CreateTicketAction.php
+2. app/Actions/PostReplyAction.php
+3. app/Livewire/Requester/TicketCreateForm.php
+4. resources/views/livewire/requester/ticket-create-form.blade.php
+5. app/Livewire/Requester/MyTicketsTable.php
+6. resources/views/livewire/requester/my-tickets-table.blade.php
+7. app/Livewire/Requester/TicketDetail.php
+8. resources/views/livewire/requester/ticket-detail.blade.php
+9. routes/web.php
+
+### Terminal commands to run:
+```bash
+php artisan migrate:fresh --seed
+php artisan serve
+# Log in as requester@agentdesk.test / password
+# Create a ticket, view it, post a reply
+composer test:types
+composer test
+```
+
+### How to verify Day 4 is complete:
+- Requester can create a ticket with a title and body
+- Ticket appears in MyTicketsTable immediately after creation
+- Requester can open the ticket and see the thread
+- Requester can post a public reply
+- Requester CANNOT see internal notes (verified by policy)
+- Requester CANNOT see another user's ticket (verified by policy)
+- composer test:types passes
+- All Day 4 feature tests pass
 
 ## Day 5 — SupportAgent Operations
 
