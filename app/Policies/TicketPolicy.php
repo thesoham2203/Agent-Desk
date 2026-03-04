@@ -91,6 +91,22 @@ final class TicketPolicy
     }
 
     /**
+     * HLD §8.2: Only Agent or Admin can add internal notes.
+     */
+    public function addInternalNote(User $user): bool
+    {
+        return $user->role === UserRole::Agent || $user->role === UserRole::Admin;
+    }
+
+    /**
+     * HLD §8.2: Only Agent or Admin can assign/unassign tickets.
+     */
+    public function assign(User $user): bool
+    {
+        return $user->role === UserRole::Agent || $user->role === UserRole::Admin;
+    }
+
+    /**
      * HLD: Not required by HLD. Always deny.
      */
     public function delete(): bool
@@ -98,17 +114,3 @@ final class TicketPolicy
         return false;
     }
 }
-
-/**
- * ============================================================
- * WHAT TO READ NEXT:
- * ============================================================
- * Now that you understand TicketPolicy.php, the next logical file
- * to read is:
- *
- * → app/Policies/TicketMessagePolicy.php
- *
- * WHY: Ticket messages form the core conversation on tickets,
- * building upon the primary ticket visibility rules.
- * ============================================================
- */

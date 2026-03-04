@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -37,6 +38,7 @@ use Livewire\WithPagination;
  * reactively without full page loads.
  * ============================================================
  */
+#[Layout('layouts.app')]
 final class MyTicketsTable extends Component
 {
     use WithPagination;

@@ -13,6 +13,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -41,6 +42,7 @@ use Livewire\Component;
  * expensive or repeated collection filtering.
  * ============================================================
  */
+#[Layout('layouts.app')]
 final class TicketDetail extends Component
 {
     /**

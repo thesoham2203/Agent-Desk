@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserRole;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +40,20 @@ final class EnsureRole
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        abort_if(! $request->user() || ! in_array($request->user()->role->value, $roles, true), 403, 'Unauthorized action.');
+        $user = $request->user();
+
+        if (! $user || ! in_array($user->role->value, $roles, true)) {
+            // Redirect to a sensible location based on their actual role
+            if ($user?->role === UserRole::Agent || $user?->role === UserRole::Admin) {
+                return to_route('agent.queue');
+            }
+
+            if ($user?->role === UserRole::Requester) {
+                return to_route('requester.tickets.index');
+            }
+
+            abort(403, 'Unauthorized action.');
+        }
 
         return $next($request);
     }

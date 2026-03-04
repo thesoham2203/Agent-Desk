@@ -192,9 +192,60 @@ composer test
 
 [To be filled in after Day 4 is complete]
 
-## Day 6 — Attachments
+## Day 6 — SupportAgent Operations
 
-[To be filled in after Day 5 is complete]
+### Goal:
+Build the complete SupportAgent experience — triage queue,
+ticket management, internal notes, public replies, status
+and priority changes, assignment.
+
+### What you will build:
+- app/Actions/AssignTicketAction.php
+- app/Actions/ChangeTicketStatusAction.php
+- app/Actions/AddInternalNoteAction.php
+- app/Livewire/Agent/TriageQueue.php
+- app/Livewire/Agent/TicketDetail.php
+- resources/views/livewire/agent/triage-queue.blade.php
+- resources/views/livewire/agent/ticket-detail.blade.php
+- routes/web.php (agent route group added)
+
+### Core concepts you will learn:
+- How the same model (Ticket) can have different views
+  for different roles (Requester vs Agent TicketDetail)
+- How Actions keep components thin
+- How internal notes are hidden from requesters at query level
+- How status transitions are enforced in business logic
+
+### Files to read in order:
+1. app/Actions/AssignTicketAction.php
+2. app/Actions/ChangeTicketStatusAction.php
+3. app/Actions/AddInternalNoteAction.php
+4. app/Livewire/Agent/TriageQueue.php
+5. resources/views/livewire/agent/triage-queue.blade.php
+6. app/Livewire/Agent/TicketDetail.php
+7. resources/views/livewire/agent/ticket-detail.blade.php
+8. routes/web.php
+
+### Terminal commands to run:
+```bash
+php artisan migrate:fresh --seed
+php artisan serve
+# Log in as agent@agentdesk.test / password
+# Visit /agent/queue
+# Assign a ticket, change status, add internal note
+composer test:types
+composer test
+```
+
+### How to verify Day 6 is complete:
+- Agent sees triage queue with unassigned New tickets
+- Agent can assign a ticket to themselves
+- Agent can change ticket status
+- Agent can add an internal note (not visible to requester)
+- Agent can post a public reply
+- Requester CANNOT access /agent/* routes
+- composer test:types passes
+- All Day 6 feature tests pass
 
 ## Day 7 — Scheduler + Notifications
 
