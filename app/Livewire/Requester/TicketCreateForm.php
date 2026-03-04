@@ -6,15 +6,18 @@ namespace App\Livewire\Requester;
 
 use App\Actions\CreateTicketAction;
 use App\Actions\CreateTicketData;
+use App\Actions\StoreAttachmentAction;
 use App\Models\Category;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /**
  * ============================================================
@@ -44,6 +47,8 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 final class TicketCreateForm extends Component
 {
+    use WithFileUploads;
+
     /**
      * The title of the new ticket.
      * Public so Livewire can bind it to the template input.
@@ -64,6 +69,15 @@ final class TicketCreateForm extends Component
      */
     #[Validate('nullable|exists:categories,id')]
     public ?int $categoryId = null;
+
+    /**
+     * The files attached to the new ticket.
+     * Livewire's temporary upload — automatically handles chunked uploads.
+     *
+     * @var array<int, UploadedFile>
+     */
+    #[Validate(['attachments.*' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,gif,doc,docx,xls,xlsx,txt,zip'])]
+    public array $attachments = [];
 
     /**
      * Tracks whether the form has been successfully submitted.
@@ -111,6 +125,12 @@ final class TicketCreateForm extends Component
             body: $this->body,
             categoryId: $this->categoryId,
         ));
+
+        // Store each uploaded file as an Attachment
+        foreach ($this->attachments as $file) {
+            /** @var UploadedFile $file */
+            resolve(StoreAttachmentAction::class)->execute($ticket, null, $file);
+        }
 
         // 4. Update component state
         $this->submitted = true;

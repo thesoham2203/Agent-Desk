@@ -1,7 +1,23 @@
 <?php
 
 declare(strict_types=1);
+use App\Http\Controllers\AttachmentController;
 use Illuminate\Support\Facades\Route;
+
+/**
+ * Attachment download route.
+ * Protected by auth middleware only — the AttachmentController
+ * itself calls Gate::authorize() for fine-grained policy check.
+ * We don't use role middleware here because both requesters
+ * AND agents need to download attachments.
+ */
+Route::middleware(['auth'])
+    ->group(function (): void {
+        Route::get(
+            '/attachments/{attachment}/download',
+            [AttachmentController::class, 'download']
+        )->name('attachments.download');
+    });
 
 // Default pages provided by Breeze — do not remove
 Route::view('/', 'welcome');

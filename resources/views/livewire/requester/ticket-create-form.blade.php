@@ -65,6 +65,24 @@
                 @enderror
             </div>
 
+            <!-- File Upload -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Attachments</label>
+                <input type="file" wire:model="attachments" multiple
+                    accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx,.txt,.zip"
+                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+
+                @error('attachments.*')
+                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+
+                @if(count($this->attachments) > 0)
+                    <p class="mt-2 text-sm text-blue-600 font-medium">
+                        {{ count($this->attachments) }} file(s) selected
+                    </p>
+                @endif
+            </div>
+
             <!-- Submit Button with Loading State -->
             <div class="flex justify-end">
                 <button type="submit"

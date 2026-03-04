@@ -5,17 +5,20 @@ declare(strict_types=1);
 namespace App\Livewire\Requester;
 
 use App\Actions\PostReplyAction;
+use App\Actions\StoreAttachmentAction;
 use App\Enums\TicketMessageType;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /**
  * ============================================================
@@ -45,6 +48,8 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 final class TicketDetail extends Component
 {
+    use WithFileUploads;
+
     /**
      * The deeply loaded ticket object.
      * Public so Blade can read its title, status, etc.
@@ -64,6 +69,14 @@ final class TicketDetail extends Component
     public bool $replySent = false;
 
     /**
+     * The files attached to the reply.
+     *
+     * @var array<int, UploadedFile>
+     */
+    #[Validate(['replyAttachments.*' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,gif,doc,docx,xls,xlsx,txt,zip'])]
+    public array $replyAttachments = [];
+
+    /**
      * Called once when component loads via URL match.
      */
     public function mount(int $ticketId): void
@@ -71,6 +84,7 @@ final class TicketDetail extends Component
         // 1. Fetch data
         $this->ticket = Ticket::with([
             'messages.author',
+            'messages.attachments',
             'attachments',
             'category',
         ])->findOrFail($ticketId);
@@ -109,15 +123,26 @@ final class TicketDetail extends Component
         // 3. Execute
         /** @var User $user */
         $user = auth()->user();
-        $action->execute($user, $this->ticket, $this->replyBody);
+        $message = $action->execute($user, $this->ticket, $this->replyBody);
+
+        // Store each uploaded file as an Attachment
+        foreach ($this->replyAttachments as $file) {
+            /** @var UploadedFile $file */
+            resolve(StoreAttachmentAction::class)->execute(
+                $this->ticket,
+                $message,
+                $file
+            );
+        }
 
         // 4. Update component state
         $this->replyBody = '';
+        $this->replyAttachments = [];
         $this->replySent = true;
 
         // 5. Reload relationships so new message appears instantly
         /** @var Ticket $freshTicket */
-        $freshTicket = $this->ticket->fresh(['messages.author', 'attachments', 'category']);
+        $freshTicket = $this->ticket->fresh(['messages.author', 'messages.attachments', 'attachments', 'category']);
         $this->ticket = $freshTicket;
     }
 

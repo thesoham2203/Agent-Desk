@@ -39,6 +39,21 @@
             <div class="prose max-w-none text-sm text-gray-700">
                 {!! nl2br(e($ticket->body)) !!}
             </div>
+
+            @if($ticket->attachments->count() > 0)
+                <div class="mt-4 flex flex-wrap gap-2">
+                    @foreach($ticket->attachments as $attachment)
+                        <a href="{{ route('attachments.download', $attachment) }}"
+                            class="inline-flex items-center px-3 py-1 rounded-md bg-gray-100 text-xs font-medium text-gray-700 hover:bg-gray-200">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            {{ $attachment->original_name }} ({{ number_format($attachment->size / 1024, 1) }} KB)
+                        </a>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
 
@@ -69,6 +84,21 @@
                         class="prose max-w-none text-sm {{ $message->author->role === \App\Enums\UserRole::Requester ? 'text-blue-800' : 'text-gray-700' }}">
                         {!! nl2br(e($message->body)) !!}
                     </div>
+
+                    @if($message->attachments->count() > 0)
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            @foreach($message->attachments as $attachment)
+                                <a href="{{ route('attachments.download', $attachment) }}"
+                                    class="inline-flex items-center px-2 py-1 rounded-md {{ $message->author->role === \App\Enums\UserRole::Requester ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }} text-[10px] font-medium transition-colors">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    {{ $attachment->original_name }}
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
         @endforeach
@@ -105,6 +135,23 @@
                     @error('replyBody')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Attachments</label>
+                    <input type="file" wire:model="replyAttachments" multiple
+                        accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx,.txt,.zip"
+                        class="block w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+
+                    @error('replyAttachments.*')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+
+                    @if(count($this->replyAttachments) > 0)
+                        <p class="mt-1 text-xs text-blue-600 font-medium">
+                            {{ count($this->replyAttachments) }} file(s) selected
+                        </p>
+                    @endif
                 </div>
                 <div class="mt-4 flex justify-end">
                     <button type="submit"
