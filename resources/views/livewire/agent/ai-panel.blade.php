@@ -1,4 +1,4 @@
-<div class="space-y-6" {{ $polling ? 'wire:poll.2s="refresh"' : '' }}>
+<div class="space-y-6" {{ $polling ? 'wire:poll.2000ms="refresh"' : '' }}>
     <!-- AI Assistant Header -->
     <div class="flex items-center gap-2 pb-2 border-b border-gray-200">
         <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,7 +165,8 @@
                 <div class="space-y-4">
                     <div class="p-3 bg-white rounded border border-gray-200 shadow-sm relative group">
                         <p class="text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
-                            {{ $latestReplyDraftRun->output_json['draft'] }}</p>
+                            {{ $latestReplyDraftRun->output_json['draft'] }}
+                        </p>
                         <div class="mt-3 block">
                             <button type="button"
                                 x-on:click="$dispatch('use-draft', { draft: @js($latestReplyDraftRun->output_json['draft']) })"

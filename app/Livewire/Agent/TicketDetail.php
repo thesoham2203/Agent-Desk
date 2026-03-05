@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -100,19 +101,11 @@ final class TicketDetail extends Component
     public array $replyAttachments = [];
 
     /**
-     * Listeners for events dispatched from the AI Panel.
-     *
-     * @var array<string, string>
-     */
-    protected $listeners = [
-        'use-draft' => 'applyDraft',
-    ];
-
-    /**
      * Applies the AI-generated draft to the reply body.
      *
      * @param  array{draft: string}  $payload  The draft content from the AI Panel.
      */
+    #[On('use-draft')]
     public function applyDraft(array $payload): void
     {
         $this->replyBody = (string) $payload['draft'];
