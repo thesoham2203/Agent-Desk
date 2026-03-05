@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\UserRole;
+use App\Jobs\RunTicketTriageJob;
 use App\Livewire\Requester\TicketCreateForm;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,7 +35,7 @@ it('requester can create a ticket', function (): void {
     ]);
 
     // Verify job was dispatched without running it
-    // TODO: Queue::assertPushed(RunTicketTriageJob::class);
+    Queue::assertPushed(RunTicketTriageJob::class);
 });
 
 it('ticket creation fails without a title', function (): void {

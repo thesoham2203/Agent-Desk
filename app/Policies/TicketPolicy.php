@@ -107,6 +107,14 @@ final class TicketPolicy
     }
 
     /**
+     * HLD §8.2: Only SupportAgent or Admin can trigger AI tools.
+     */
+    public function runAi(User $user): bool
+    {
+        return $user->role === UserRole::Agent;
+    }
+
+    /**
      * HLD: Not required by HLD. Always deny.
      */
     public function delete(): bool

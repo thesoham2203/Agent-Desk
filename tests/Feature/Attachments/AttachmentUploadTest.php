@@ -35,6 +35,7 @@ use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
@@ -43,6 +44,8 @@ uses(RefreshDatabase::class);
 beforeEach(function (): void {
     // Prevent real files from being written during tests.
     Storage::fake('private');
+    // Prevent AI triage jobs from running during attachment feature tests.
+    Queue::fake();
 });
 
 it('requester can upload attachment when creating ticket', function (): void {

@@ -304,9 +304,81 @@ composer test
 - Storage::fake() used in all attachment tests
 - composer test:types passes
 
-## Day 8 — AI Subsystem: TriageAgent
+## Day 8 — AI Subsystem
 
-[To be filled in after Day 7 is complete]
+**Goal:** Build the complete AI pipeline — tool, agents, jobs, polling UI.
+Agents call Groq API. Jobs run agents async. UI polls for results.
+
+### What you will build:
+- app/AI/Tools/SearchKnowledgeBaseTool.php
+- app/AI/Agents/TriageAgent.php
+- app/AI/Agents/ReplyDraftAgent.php
+- app/Jobs/RunTicketTriageJob.php
+- app/Jobs/DraftTicketReplyJob.php
+- app/Livewire/Agent/AiPanel.php
+- resources/views/livewire/agent/ai-panel.blade.php
+- Update app/Actions/CreateTicketAction.php (uncomment job dispatch)
+- Update routes/web.php (add AI trigger routes)
+- tests/Feature/AI/TriageAgentTest.php
+- tests/Feature/AI/ReplyDraftAgentTest.php
+- tests/Feature/AI/AiJobTest.php
+
+### The async flow (memorize this):
+
+```text
+Agent clicks "Run Triage"
+      ↓
+AiPanel::runTriage() called
+      ↓
+AiRun::create(['status' => 'queued'])  ← instant DB write
+      ↓
+RunTicketTriageJob::dispatch($aiRun->id)  ← instant queue push
+      ↓
+UI immediately shows "Queued" status
+      ↓
+[BACKGROUND: queue worker picks up job]
+      ↓
+Job updates ai_runs status → 'running'
+      ↓
+Job calls TriageAgent->handle(TriageInput)
+      ↓
+TriageAgent calls Groq API
+      ↓
+Job saves result → ai_runs status = 'succeeded', output_json filled
+      ↓
+wire:poll.2s on AiPanel detects status change
+      ↓
+UI renders the triage result
+```
+
+### Files to read in order:
+1. app/AI/Tools/SearchKnowledgeBaseTool.php
+2. app/AI/Agents/TriageAgent.php
+3. app/AI/Agents/ReplyDraftAgent.php
+4. app/Jobs/RunTicketTriageJob.php
+5. app/Jobs/DraftTicketReplyJob.php
+6. app/Livewire/Agent/AiPanel.php
+7. resources/views/livewire/agent/ai-panel.blade.php
+
+### Terminal commands to run:
+```bash
+php artisan migrate:fresh --seed
+# In a SEPARATE terminal window:
+php artisan queue:work --tries=3
+# In your browser:
+php artisan serve
+# Log in as agent, open a ticket, run triage, watch status change
+composer test:types
+composer test
+```
+
+### .env values needed:
+```text
+GROQ_API_KEY=your-key-here
+GROQ_MODEL=llama3-8b-8192
+QUEUE_CONNECTION=database
+```
+
 
 ## Day 9 — AI Subsystem: ReplyDraftAgent + KB Tool
 

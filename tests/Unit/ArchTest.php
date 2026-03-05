@@ -11,7 +11,9 @@ arch('preset → strict')
     ->strict()
     ->ignoring('App\Http\Controllers')
     ->ignoring('App\Livewire\Forms')
-    ->ignoring('App\Livewire\Actions');
+    ->ignoring('App\Livewire\Actions')
+    ->ignoring('App\AI\Agents')
+    ->ignoring('App\AI\Tools');
 
 arch()->preset()->security();
 

@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -98,6 +99,22 @@ final class TicketDetail extends Component
      */
     #[Validate(['replyAttachments.*' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,gif,doc,docx,xls,xlsx,txt,zip'])]
     public array $replyAttachments = [];
+
+    /**
+     * Applies the AI-generated draft to the reply body.
+     *
+     * @param  array{draft: string}  $payload  The draft content from the AI Panel.
+     */
+    #[On('use-draft')]
+    public function applyDraft(array $payload): void
+    {
+        $this->replyBody = (string) $payload['draft'];
+
+        // Also ensure the public reply form is visible if it was hidden
+        $this->showInternalNoteForm = false;
+
+        $this->dispatch('reply-body-updated'); // Optional: triggering a frontend event if needed
+    }
 
     /**
      * Component Initialization. Load ticket relations and auth checks.
