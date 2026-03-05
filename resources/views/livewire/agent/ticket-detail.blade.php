@@ -9,6 +9,11 @@
     ============================================================
     -->
     <div class="max-w-7xl mx-auto py-8 lg:px-8">
+        <!-- AI PANEL (Day 8 Implementation) -->
+        <div class="mb-8 bg-white shadow sm:rounded-lg overflow-hidden p-6 border-l-4 border-indigo-500">
+            @livewire('agent.ai-panel', ['ticketId' => $ticket->id])
+        </div>
+
         <!-- HEADER -->
         <div class="bg-white shadow sm:rounded-lg mb-8">
             <div class="px-4 py-5 sm:px-6 flex justify-between items-start">

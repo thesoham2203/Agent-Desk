@@ -100,6 +100,30 @@ final class TicketDetail extends Component
     public array $replyAttachments = [];
 
     /**
+     * Listeners for events dispatched from the AI Panel.
+     *
+     * @var array<string, string>
+     */
+    protected $listeners = [
+        'use-draft' => 'applyDraft',
+    ];
+
+    /**
+     * Applies the AI-generated draft to the reply body.
+     *
+     * @param  array{draft: string}  $payload  The draft content from the AI Panel.
+     */
+    public function applyDraft(array $payload): void
+    {
+        $this->replyBody = (string) $payload['draft'];
+
+        // Also ensure the public reply form is visible if it was hidden
+        $this->showInternalNoteForm = false;
+
+        $this->dispatch('reply-body-updated'); // Optional: triggering a frontend event if needed
+    }
+
+    /**
      * Component Initialization. Load ticket relations and auth checks.
      */
     public function mount(Ticket $ticket): void

@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Enums\AiRunStatus;
+use App\Enums\AiRunType;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
+use App\Jobs\RunTicketTriageJob;
+use App\Models\AiRun;
 use App\Models\AuditLog;
 use App\Models\Ticket;
 use App\Models\User;
@@ -80,8 +84,15 @@ final class CreateTicketAction
         ]);
 
         // 3. Dispatch RunTicketTriageJob
-        // TODO: Create RunTicketTriageJob on Day 8
-        // \App\Jobs\RunTicketTriageJob::dispatch($ticket->id);
+        // Every new ticket automatically gets triage queued.
+        $aiRun = AiRun::query()->create([
+            'ticket_id' => $ticket->id,
+            'initiated_by_user_id' => $requester->id,
+            'run_type' => AiRunType::Triage->value,
+            'status' => AiRunStatus::Queued->value,
+        ]);
+
+        dispatch(new RunTicketTriageJob($aiRun->id));
 
         return $ticket;
     }

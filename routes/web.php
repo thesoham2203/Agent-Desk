@@ -1,6 +1,13 @@
 <?php
 
 declare(strict_types=1);
+
+/**
+ * NOTE: The AI subsystem requires a queue worker to function.
+ * Run in a separate terminal: php artisan queue:work --tries=3
+ * Required .env: QUEUE_CONNECTION=database, GROQ_API_KEY=...
+ */
+
 use App\Http\Controllers\AttachmentController;
 use Illuminate\Support\Facades\Route;
 

@@ -35,6 +35,7 @@ use App\Models\Attachment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
@@ -42,6 +43,8 @@ uses(RefreshDatabase::class);
 beforeEach(function (): void {
     // Prevent real files from being written during tests.
     Storage::fake('private');
+    // Prevent AI triage jobs from running during feature tests.
+    Queue::fake();
 });
 
 it('requester can download attachment on their own ticket', function (): void {
