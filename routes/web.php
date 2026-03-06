@@ -91,5 +91,32 @@ Route::middleware(['auth', 'role:agent,admin'])
             ->name('tickets.show');
     });
 
+use App\Livewire\Admin\AiRunsViewer;
+use App\Livewire\Admin\AuditLogViewer;
+use App\Livewire\Admin\CategoryManager;
+use App\Livewire\Admin\KbArticleManager;
+use App\Livewire\Admin\MacroManager;
+use App\Livewire\Admin\SlaConfigManager;
+
+/**
+ * ============================================================
+ * ADMIN ROUTES
+ * ============================================================
+ * Middleware: auth + role:admin only
+ * Prefix: /admin
+ * Name prefix: admin.
+ * ============================================================
+ */
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function (): void {
+        Route::get('/categories', CategoryManager::class)->name('categories');
+        Route::get('/macros', MacroManager::class)->name('macros');
+        Route::get('/sla', SlaConfigManager::class)->name('sla');
+        Route::get('/kb-articles', KbArticleManager::class)->name('kb-articles');
+        Route::get('/audit-log', AuditLogViewer::class)->name('audit-log');
+        Route::get('/ai-runs', AiRunsViewer::class)->name('ai-runs');
+    });
 // Auth routes provided by Breeze — do not remove
 require __DIR__.'/auth.php';

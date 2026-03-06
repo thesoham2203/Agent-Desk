@@ -35,6 +35,9 @@ use Livewire\WithPagination;
  * They run each time the component is rendered but aren't stored in Livewire's internal state.
  * ============================================================
  */
+/**
+ * @property-read LengthAwarePaginator<int, Ticket> $tickets
+ */
 #[Layout('layouts.app')]
 final class TriageQueue extends Component
 {

@@ -7,7 +7,7 @@
         <h3 class="text-lg font-bold text-gray-900">AI Assistant</h3>
     </div>
 
-    @if(session('error'))
+    @if (session('error'))
         <div class="p-3 text-sm text-red-600 rounded-md bg-red-50">
             {{ session('error') }}
         </div>
@@ -18,12 +18,12 @@
         <div class="flex items-center justify-between">
             <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">Ticket Triage</h4>
 
-            @if($latestTriageRun?->status === \App\Enums\AiRunStatus::Queued)
+            @if ($latestTriageRun?->status === \App\Enums\AiRunStatus::Queued)
                 <span
                     class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 animate-pulse">
                     ⏳ Queued
                 </span>
-            @elseif($latestTriageRun?->status === \App\Enums\AiRunStatus::Running)
+            @elseif ($latestTriageRun?->status === \App\Enums\AiRunStatus::Running)
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
                     <svg class="animate-spin -ml-1 mr-2 h-3 w-3 text-blue-800" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -33,11 +33,11 @@
                     </svg>
                     🔄 Running
                 </span>
-            @elseif($latestTriageRun?->status === \App\Enums\AiRunStatus::Succeeded)
+            @elseif ($latestTriageRun?->status === \App\Enums\AiRunStatus::Succeeded)
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                     ✅ Complete
                 </span>
-            @elseif($latestTriageRun?->status === \App\Enums\AiRunStatus::Failed)
+            @elseif ($latestTriageRun?->status === \App\Enums\AiRunStatus::Failed)
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
                     ❌ Failed
                 </span>
@@ -45,7 +45,7 @@
         </div>
 
         <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-            @if(!$latestTriageRun)
+            @if (!$latestTriageRun)
                 <p class="text-sm text-gray-500 italic">No triage run yet.</p>
                 <div class="mt-3">
                     <button wire:click="runTriage"
@@ -53,11 +53,11 @@
                         Run Triage
                     </button>
                 </div>
-            @elseif($latestTriageRun->status === \App\Enums\AiRunStatus::Queued)
+            @elseif ($latestTriageRun->status === \App\Enums\AiRunStatus::Queued)
                 <p class="text-sm text-gray-600">Waiting for queue worker...</p>
-            @elseif($latestTriageRun->status === \App\Enums\AiRunStatus::Running)
+            @elseif ($latestTriageRun->status === \App\Enums\AiRunStatus::Running)
                 <p class="text-sm text-gray-600">Analyzing ticket content via Groq API...</p>
-            @elseif($latestTriageRun->status === \App\Enums\AiRunStatus::Succeeded)
+            @elseif ($latestTriageRun->status === \App\Enums\AiRunStatus::Succeeded)
                 <div class="space-y-3">
                     <div class="grid grid-cols-2 gap-4 text-xs">
                         <div>
@@ -76,13 +76,13 @@
                     <div>
                         <span class="font-bold block text-xs text-gray-500 uppercase">Tags</span>
                         <div class="flex flex-wrap gap-1 mt-1">
-                            @foreach($latestTriageRun->output_json['tags'] as $tag)
+                            @foreach ($latestTriageRun->output_json['tags'] as $tag)
                                 <span
                                     class="px-2 py-0.5 rounded-full text-[10px] bg-gray-200 text-gray-700 font-medium">#{{ $tag }}</span>
                             @endforeach
                         </div>
                     </div>
-                    @if($latestTriageRun->output_json['escalation_flag'])
+                    @if ($latestTriageRun->output_json['escalation_flag'])
                         <div class="flex items-center gap-1 text-red-600">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path
@@ -91,7 +91,7 @@
                             <span class="text-xs font-bold uppercase">Escalation Recommended</span>
                         </div>
                     @endif
-                    @if($latestTriageRun->output_json['clarifying_question'])
+                    @if ($latestTriageRun->output_json['clarifying_question'])
                         <div class="p-2 bg-blue-50 border-l-4 border-blue-400 rounded-r">
                             <span class="block text-[10px] font-bold text-blue-700 uppercase">Clarifying Question</span>
                             <p class="text-sm text-blue-900 italic">"{{ $latestTriageRun->output_json['clarifying_question'] }}"
@@ -105,7 +105,7 @@
                         </button>
                     </div>
                 </div>
-            @elseif($latestTriageRun->status === \App\Enums\AiRunStatus::Failed)
+            @elseif ($latestTriageRun->status === \App\Enums\AiRunStatus::Failed)
                 <div class="space-y-2">
                     <p class="text-xs text-red-600">Error: {{ $latestTriageRun->error_message }}</p>
                     <button wire:click="runTriage"
@@ -122,12 +122,12 @@
         <div class="flex items-center justify-between">
             <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">Draft Reply</h4>
 
-            @if($latestReplyDraftRun?->status === \App\Enums\AiRunStatus::Queued)
+            @if ($latestReplyDraftRun?->status === \App\Enums\AiRunStatus::Queued)
                 <span
                     class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 animate-pulse">
                     ⏳ Queued
                 </span>
-            @elseif($latestReplyDraftRun?->status === \App\Enums\AiRunStatus::Running)
+            @elseif ($latestReplyDraftRun?->status === \App\Enums\AiRunStatus::Running)
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
                     <svg class="animate-spin -ml-1 mr-2 h-3 w-3 text-blue-800" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -137,11 +137,11 @@
                     </svg>
                     🔄 Drafting
                 </span>
-            @elseif($latestReplyDraftRun?->status === \App\Enums\AiRunStatus::Succeeded)
+            @elseif ($latestReplyDraftRun?->status === \App\Enums\AiRunStatus::Succeeded)
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                     ✅ Ready
                 </span>
-            @elseif($latestReplyDraftRun?->status === \App\Enums\AiRunStatus::Failed)
+            @elseif ($latestReplyDraftRun?->status === \App\Enums\AiRunStatus::Failed)
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
                     ❌ Failed
                 </span>
@@ -149,7 +149,7 @@
         </div>
 
         <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-            @if(!$latestReplyDraftRun)
+            @if (!$latestReplyDraftRun)
                 <p class="text-sm text-gray-500 italic">No draft generated yet.</p>
                 <div class="mt-3">
                     <button wire:click="runReplyDraft"
@@ -157,11 +157,11 @@
                         Generate Draft
                     </button>
                 </div>
-            @elseif($latestReplyDraftRun->status === \App\Enums\AiRunStatus::Queued)
+            @elseif ($latestReplyDraftRun->status === \App\Enums\AiRunStatus::Queued)
                 <p class="text-sm text-gray-600">Waiting for queue worker...</p>
-            @elseif($latestReplyDraftRun->status === \App\Enums\AiRunStatus::Running)
+            @elseif ($latestReplyDraftRun->status === \App\Enums\AiRunStatus::Running)
                 <p class="text-sm text-gray-600">Drafting personalized response using Knowledge Base grounding...</p>
-            @elseif($latestReplyDraftRun->status === \App\Enums\AiRunStatus::Succeeded)
+            @elseif ($latestReplyDraftRun->status === \App\Enums\AiRunStatus::Succeeded)
                 <div class="space-y-4">
                     <div class="p-3 bg-white rounded border border-gray-200 shadow-sm relative group">
                         <p class="text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
@@ -176,21 +176,21 @@
                         </div>
                     </div>
 
-                    @if(!empty($latestReplyDraftRun->output_json['next_steps']))
+                    @if (!empty($latestReplyDraftRun->output_json['next_steps']))
                         <div>
                             <span class="font-bold block text-xs text-gray-500 uppercase">Suggested Next Steps</span>
                             <ul class="list-disc list-inside text-xs text-gray-700 mt-1 space-y-1">
-                                @foreach($latestReplyDraftRun->output_json['next_steps'] as $step)
+                                @foreach ($latestReplyDraftRun->output_json['next_steps'] as $step)
                                     <li>{{ $step }}</li>
                                 @endforeach
                             </ul>
                         </div>
                     @endif
 
-                    @if(!empty($latestReplyDraftRun->output_json['risk_flags']))
+                    @if (!empty($latestReplyDraftRun->output_json['risk_flags']))
                         <div class="p-2 bg-orange-50 rounded border border-orange-200">
                             <span class="block text-[10px] font-bold text-orange-700 uppercase">Risk Awareness</span>
-                            @foreach($latestReplyDraftRun->output_json['risk_flags'] as $risk)
+                            @foreach ($latestReplyDraftRun->output_json['risk_flags'] as $risk)
                                 <div class="flex items-center gap-1 text-[11px] text-orange-800 mt-0.5">
                                     <span class="w-1 h-1 bg-orange-400 rounded-full"></span>
                                     {{ $risk }}
@@ -206,7 +206,7 @@
                         </button>
                     </div>
                 </div>
-            @elseif($latestReplyDraftRun->status === \App\Enums\AiRunStatus::Failed)
+            @elseif ($latestReplyDraftRun->status === \App\Enums\AiRunStatus::Failed)
                 <div class="space-y-2">
                     <p class="text-xs text-red-600">Error: {{ $latestReplyDraftRun->error_message }}</p>
                     <button wire:click="runReplyDraft"

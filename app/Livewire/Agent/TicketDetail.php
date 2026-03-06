@@ -11,6 +11,7 @@ use App\Actions\PostReplyAction;
 use App\Actions\StoreAttachmentAction;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
+use App\Enums\UserRole;
 use App\Models\AuditLog;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
@@ -44,6 +45,10 @@ use Livewire\WithFileUploads;
  * We leverage $this->authorize() here, meaning policies decide whether the user is allowed to act on this specific ticket.
  * It's cleaner here than enforcing permissions in the Blade view itself.
  * ============================================================
+ */
+/**
+ * @property-read Collection<int, TicketMessage> $threadMessages
+ * @property-read Collection<int, User> $availableAgents
  */
 #[Layout('layouts.app')]
 final class TicketDetail extends Component
@@ -81,6 +86,11 @@ final class TicketDetail extends Component
      * Toggle between standard reply mode and internal note mode.
      */
     public bool $showInternalNoteForm = false;
+
+    /**
+     * The ID of the agent to whom the ticket will be assigned.
+     */
+    public ?int $assignToAgentId = null;
 
     /**
      * Tracks successfully sent replies for flash message rendering.
@@ -145,6 +155,23 @@ final class TicketDetail extends Component
     public function threadMessages(): Collection
     {
         return $this->ticket->messages()->with(['author', 'attachments'])->oldest()->get();
+    }
+
+    /**
+     * Retrieves all available agents to assign tickets to.
+     *
+     * @return Collection<int, User>
+     */
+    #[Computed]
+    public function availableAgents(): Collection
+    {
+        /** @var Collection<int, User> $agents */
+        $agents = User::query()
+            ->where('role', UserRole::Agent->value)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return $agents;
     }
 
     /**
@@ -282,6 +309,34 @@ final class TicketDetail extends Component
         );
 
         $this->ticket->refresh();
+    }
+
+    /**
+     * Assigns the ticket to a specific agent selected from the dropdown.
+     */
+    public function assignToAgent(): void
+    {
+        $this->authorize('assign', $this->ticket);
+
+        if ($this->assignToAgentId === null) {
+            return;
+        }
+
+        $assignee = User::query()->findOrFail($this->assignToAgentId);
+
+        /** @var User $user */
+        $user = auth()->user();
+
+        resolve(AssignTicketAction::class)->execute(
+            $user,
+            $this->ticket,
+            $assignee
+        );
+
+        $this->assignToAgentId = null;
+        /** @var Ticket $freshTicket */
+        $freshTicket = $this->ticket->fresh(['assignee', 'requester']);
+        $this->ticket = $freshTicket;
     }
 
     public function render(): View

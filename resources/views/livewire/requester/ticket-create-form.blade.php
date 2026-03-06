@@ -6,7 +6,7 @@
             possible.</p>
     </div>
 
-    @if($submitted)
+    @if ($submitted)
         <!-- Success State -->
         <div class="rounded-md bg-green-50 p-4 mb-6 relative">
             <div class="flex">
@@ -36,7 +36,7 @@
                 <select id="categoryId" wire:model="categoryId"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                     <option value="">Select a Category...</option>
-                    @foreach($categories as $category)
+                    @foreach ($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
                 </select>
@@ -76,7 +76,7 @@
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                 @enderror
 
-                @if(count($this->attachments) > 0)
+                @if (count($this->attachments) > 0)
                     <p class="mt-2 text-sm text-blue-600 font-medium">
                         {{ count($this->attachments) }} file(s) selected
                     </p>
