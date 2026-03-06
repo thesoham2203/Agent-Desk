@@ -73,6 +73,12 @@
         </div>
     @endif
 
+    @if (session()->has('error'))
+        <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-400 text-red-700">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="overflow-hidden border border-gray-200 rounded-lg shadow-sm bg-white">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">

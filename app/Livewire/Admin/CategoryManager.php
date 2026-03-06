@@ -132,7 +132,15 @@ final class CategoryManager extends Component
     {
         $this->authorize('manage-categories');
 
-        Category::query()->findOrFail($id)->delete();
+        $category = Category::query()->findOrFail($id);
+
+        if ($category->tickets()->count() > 0) {
+            session()->flash('error', 'Cannot delete a category that has tickets.');
+
+            return;
+        }
+
+        $category->delete();
         session()->flash('success', 'Category deleted successfully.');
     }
 

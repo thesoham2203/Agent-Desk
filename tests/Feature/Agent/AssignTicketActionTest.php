@@ -62,3 +62,14 @@ it('automatically triages a new ticket when assigned', function (): void {
 
     expect($ticket->status)->toBe(TicketStatus::Triaged);
 });
+
+it('agent cannot assign ticket to a requester user', function (): void {
+    $admin = User::factory()->create(['role' => UserRole::Admin]);
+    $requester = User::factory()->create(['role' => UserRole::Requester]);
+    $ticket = Ticket::factory()->create(['status' => TicketStatus::New->value, 'assigned_to' => null]);
+
+    $action = new AssignTicketAction();
+
+    $this->expectException(InvalidArgumentException::class);
+    $action->execute($admin, $ticket, $requester);
+});

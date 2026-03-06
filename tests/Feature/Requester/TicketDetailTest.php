@@ -114,3 +114,17 @@ it('requester cannot see internal notes in thread', function (): void {
         ->assertSee('Public agent response')
         ->assertDontSee('Secret internal note');
 });
+
+it('requester cannot post reply on another users ticket', function (): void {
+    /** @var User $requesterA */
+    $requesterA = User::factory()->create(['role' => UserRole::Requester]);
+
+    /** @var User $requesterB */
+    $requesterB = User::factory()->create(['role' => UserRole::Requester]);
+
+    $ticketA = Ticket::factory()->create(['requester_id' => $requesterA->id]);
+
+    Livewire::actingAs($requesterB)
+        ->test(TicketDetail::class, ['ticketId' => $ticketA->id])
+        ->assertForbidden();
+});

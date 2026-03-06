@@ -38,14 +38,28 @@ it('allows InProgress to Resolved transition', function (): void {
     expect($updatedTicket->status)->toBe(TicketStatus::Resolved);
 });
 
-it('denies Resolved to New transition', function (): void {
+it('status transition from Resolved to anything throws DomainException', function (): void {
     $agent = User::factory()->create(['role' => UserRole::Agent]);
     $ticket = Ticket::factory()->create(['status' => TicketStatus::Resolved->value]);
 
     $action = new ChangeTicketStatusAction();
 
-    expect(fn (): Ticket => $action->execute($agent, $ticket, TicketStatus::New))
-        ->toThrow(DomainException::class);
+    $statuses = [
+        TicketStatus::New,
+        TicketStatus::Triaged,
+        TicketStatus::InProgress,
+        TicketStatus::Waiting,
+    ];
+
+    foreach ($statuses as $status) {
+        $exceptionThrown = false;
+        try {
+            $action->execute($agent, $ticket, $status);
+        } catch (DomainException) {
+            $exceptionThrown = true;
+        }
+        expect($exceptionThrown)->toBeTrue();
+    }
 });
 
 it('denies New to Resolved transition', function (): void {

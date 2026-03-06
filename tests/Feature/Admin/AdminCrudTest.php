@@ -22,18 +22,24 @@ declare(strict_types=1);
  * ============================================================
  */
 use App\Enums\UserRole;
+use App\Livewire\Admin\AuditLogViewer;
 use App\Livewire\Admin\CategoryManager;
 use App\Livewire\Admin\MacroManager;
 use App\Livewire\Admin\SlaConfigManager;
+use App\Models\AuditLog;
 use App\Models\Category;
 use App\Models\Macro;
 use App\Models\SlaConfig;
+use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
+/**
+ * @property User $admin
+ */
 beforeEach(function (): void {
     $this->admin = User::factory()->create(['role' => UserRole::Admin]);
 });
@@ -100,6 +106,36 @@ test('admin can update SLA configuration', function (): void {
     $config = SlaConfig::query()->first();
     expect($config->first_response_hours)->toBe(2);
     expect($config->resolution_hours)->toBe(12);
+});
+
+test('admin cannot delete a category that has tickets', function (): void {
+    $category = Category::factory()->create(['name' => 'Used Category']);
+    Ticket::factory()->create(['category_id' => $category->id]);
+
+    Livewire::actingAs($this->admin)
+        ->test(CategoryManager::class)
+        ->call('delete', $category->id)
+        ->assertSee('Cannot delete a category that has tickets.');
+
+    expect(Category::query()->find($category->id))->not->toBeNull();
+});
+
+test('sla config first_response_hours cannot be greater than resolution_hours', function (): void {
+    Livewire::actingAs($this->admin)
+        ->test(SlaConfigManager::class)
+        ->set('firstResponseHours', 48)
+        ->set('resolutionHours', 24)
+        ->call('update')
+        ->assertHasErrors(['firstResponseHours' => 'lte']);
+});
+
+test('audit log shows entries in descending order', function (): void {
+    AuditLog::factory()->create(['created_at' => now()->subDays(2), 'action' => 'old.action', 'user_id' => $this->admin->id]);
+    AuditLog::factory()->create(['created_at' => now(), 'action' => 'new.action', 'user_id' => $this->admin->id]);
+
+    Livewire::actingAs($this->admin)
+        ->test(AuditLogViewer::class)
+        ->assertSeeInOrder(['new.action', 'old.action']);
 });
 
 /**

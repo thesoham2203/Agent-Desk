@@ -1,0 +1,343 @@
+﻿
+   WARN  Tests\Browser\WelcomeTest
+  - it has welcome page ΓåÆ Requires Dusk browser setup.                                       0.38s  
+
+   PASS  Tests\Unit\ArchTest
+  Γ£ô preset ΓåÆ php                                                                             0.41s  
+  Γ£ô preset ΓåÆ strict                                                                          0.20s  
+  Γ£ô preset ΓåÆ security                                                                        0.02s  
+  Γ£ô controllers                                                                              0.01s  
+
+   PASS  Tests\Unit\ExampleTest
+  Γ£ô that true is true
+
+   PASS  Tests\Unit\Models\UserTest
+  Γ£ô to array                                                                                 0.24s  
+
+   PASS  Tests\Feature\AI\AiJobTest
+  Γ£ô run ticket triage job updates ai run status to running then succeeded                    0.03s  
+  Γ£ô run ticket triage job sets status to failed on exception                                 0.03s  
+  Γ£ô run ticket triage job skips duplicate runs using input hash                              0.02s  
+  Γ£ô rate limiter prevents more than 5 triage requests                                        1.08s  
+  Γ£ô ai panel run triage creates ai run with correct run type                                 0.03s  
+  Γ£ô draft ticket reply job sets status to failed on exception                                0.02s  
+
+   PASS  Tests\Feature\AI\ReplyDraftAgentTest
+  Γ£ô it returns reply draft result dto with draft and next steps                              0.03s  
+  Γ£ô it handles empty kb results gracefully                                                   0.02s  
+
+   PASS  Tests\Feature\AI\TriageAgentTest
+  Γ£ô it returns triage result dto with correct fields                                         0.02s  
+  Γ£ô it throws runtime exception when groq returns invalid json                               0.02s  
+  Γ£ô it strips markdown fences from groq response                                             0.02s  
+
+   PASS  Tests\Feature\Admin\AdminAuthTest
+  Γ£ô guests are redirected to login when accessing admin routes                               0.03s  
+  Γ£ô requesters are redirected from admin routes                                              0.02s  
+  Γ£ô agents are redirected from admin routes                                                  0.02s  
+  Γ£ô admins can access admin routes                                                           1.84s  
+
+   FAIL  Tests\Feature\Admin\AdminCrudTest
+  Γ£ô admin can create and list categories                                                     0.05s  
+  Γ£ô admin can edit and delete categories                                                     0.04s  
+  Γ£ô admin can manage macros                                                                  0.03s  
+  Γ£ô admin can update SLA configuration                                                       0.04s  
+  Γ¿» admin cannot delete a category that has tickets                                          0.03s  
+  Γ£ô sla config first_response_hours cannot be greater than resolution_hours                  0.02s  
+  Γ£ô audit log shows entries in descending order                                              0.04s  
+
+   WARN  Tests\Feature\Agent\AddInternalNoteActionTest
+  Γ£ô it can add an internal note to a ticket                                                  0.03s  
+  - it fails if non-agent tries to add internal note via action directly ΓåÆ Action does notΓÇª  0.02s  
+
+   PASS  Tests\Feature\Agent\AgentTicketDetailTest
+  Γ£ô it agent can view ticket assigned to them                                                1.71s  
+  Γ£ô it agent can view unassigned new ticket                                                  0.05s  
+  Γ£ô it agent cannot view ticket assigned to different agent that is not new                  0.03s  
+  Γ£ô it agent can change ticket status                                                        0.04s  
+  Γ£ô it invalid status transition throws exception                                            0.04s  
+  Γ£ô it agent can add internal note                                                           0.04s  
+  Γ£ô it agent can post public reply                                                           0.05s  
+  Γ£ô it requester cannot access agent ticket detail route                                     0.02s  
+
+   FAIL  Tests\Feature\Agent\AssignTicketActionTest
+  Γ£ô it can assign a ticket to an agent                                                       0.04s  
+  Γ£ô it can unassign a ticket                                                                 0.02s  
+  Γ¿» it automatically triages a new ticket when assigned                                      0.02s  
+  Γ¿» it agent cannot assign ticket to a requester user                                        0.02s  
+
+   PASS  Tests\Feature\Agent\ChangeTicketStatusActionTest
+  Γ£ô it allows New to Triaged transition                                                      0.02s  
+  Γ£ô it allows InProgress to Resolved transition                                              0.02s  
+  Γ£ô it status transition from Resolved to anything throws DomainException                    0.02s  
+  Γ£ô it denies New to Resolved transition                                                     0.02s  
+  Γ£ô it sets resolved_at when resolving ticket                                                0.02s  
+
+   PASS  Tests\Feature\Agent\TriageQueueTest
+  Γ£ô it agent can view triage queue                                                           0.49s  
+  Γ£ô it triage queue shows only unassigned new tickets                                        0.05s  
+  Γ£ô it requester cannot access triage queue                                                  0.02s  
+  Γ£ô it agent can assign ticket to themselves from queue                                      0.04s  
+
+   PASS  Tests\Feature\Attachments\AttachmentDownloadTest
+  Γ£ô it requester can download attachment on their own ticket                                 0.04s  
+  Γ£ô it requester cannot download attachment on another users ticket                          0.02s  
+  Γ£ô it agent can download attachment on any ticket                                           0.03s  
+  Γ£ô it unauthenticated user cannot download any attachment                                   0.03s  
+  Γ£ô it returns 404 if file missing from disk but record exists                               0.03s  
+
+   PASS  Tests\Feature\Attachments\AttachmentUploadTest
+  Γ£ô it requester can upload attachment when creating ticket                                  0.03s  
+  Γ£ô it attachment is stored on private disk not public                                       0.02s  
+  Γ£ô it rejects files exceeding 10MB                                                          0.02s  
+  Γ£ô it rejects disallowed file types                                                         0.02s  
+
+   PASS  Tests\Feature\Auth\AuthenticationTest
+  Γ£ô login screen can be rendered                                                             4.99s  
+  Γ£ô users can authenticate using the login screen                                            2.00s  
+  Γ£ô users can not authenticate with invalid password                                         0.05s  
+  Γ£ô navigation menu can be rendered                                                          1.98s  
+  Γ£ô users can logout                                                                         0.03s  
+
+   WARN  Tests\Feature\Auth\EmailVerificationTest
+  - email verification screen can be rendered ΓåÆ Email verification disabled.                 0.02s  
+  - email can be verified ΓåÆ Email verification disabled.                                     0.01s  
+  - email is not verified with invalid hash ΓåÆ Email verification disabled.                   0.01s  
+
+   PASS  Tests\Feature\Auth\PasswordConfirmationTest
+  Γ£ô confirm password screen can be rendered                                                  1.00s  
+  Γ£ô password can be confirmed                                                                0.03s  
+  Γ£ô password is not confirmed with invalid password                                          0.03s  
+
+   PASS  Tests\Feature\Auth\PasswordResetTest
+  Γ£ô reset password link screen can be rendered                                               1.14s  
+  Γ£ô reset password link can be requested                                                     0.04s  
+  Γ£ô reset password screen can be rendered                                                    2.28s  
+  Γ£ô password can be reset with valid token                                                   0.06s  
+
+   PASS  Tests\Feature\Auth\PasswordUpdateTest
+  Γ£ô password can be updated                                                                  2.46s  
+  Γ£ô correct password must be provided to update password                                     0.05s  
+
+   PASS  Tests\Feature\Auth\RegistrationTest
+  Γ£ô registration screen can be rendered                                                      2.87s  
+  Γ£ô new users can register                                                                   0.05s  
+
+   PASS  Tests\Feature\ExampleTest
+  Γ£ô it returns a successful response                                                         0.03s  
+
+   PASS  Tests\Feature\Notifications\NotificationTest
+  Γ£ô it agent is notified when ticket is assigned to them                                     0.03s  
+  Γ£ô it agent is notified when requester replies                                              0.02s  
+  Γ£ô it agent replying does NOT trigger RequesterRepliedNotification                          0.02s  
+  Γ£ô it requester is notified when ticket is resolved                                         0.02s  
+  Γ£ô it first_responded_at is set when agent replies                                          0.02s  
+  Γ£ô it first_responded_at is NOT set when requester replies                                  0.02s  
+  Γ£ô it TicketResolvedNotification contains correct ticket title                              0.02s  
+
+   PASS  Tests\Feature\Policies\AdminPolicyTest
+  Γ£ô it allows admin to manage categories                                                     0.02s  
+  Γ£ô it denies agent from creating a category                                                 0.02s  
+  Γ£ô it denies requester from creating a category                                             0.02s  
+  Γ£ô it allows admin to update sla config                                                     0.02s  
+  Γ£ô it denies agent from updating sla config                                                 0.02s  
+  Γ£ô it allows admin to manage macros                                                         0.02s  
+  Γ£ô it allows agent to view macros                                                           0.02s  
+  Γ£ô it denies requester from viewing macros                                                  0.02s  
+  Γ£ô it allows admin to view audit logs                                                       0.02s  
+  Γ£ô it denies agent from viewing audit logs                                                  0.02s  
+  Γ£ô it allows agent to trigger an ai run                                                     0.02s  
+  Γ£ô it denies requester from triggering an ai run                                            0.02s  
+
+   PASS  Tests\Feature\Policies\AttachmentPolicyTest
+  Γ£ô it allows requester to download attachment on their own ticket                           0.03s  
+  Γ£ô it denies requester from downloading attachment on another users ticket                  0.02s  
+  Γ£ô it allows agent to download any attachment                                               0.02s  
+  Γ£ô it allows requester to delete attachment while ticket is new                             0.02s  
+  Γ£ô it denies requester from deleting attachment after ticket is no longer new               0.02s  
+  Γ£ô it allows agent to delete any attachment                                                 0.02s  
+
+   PASS  Tests\Feature\Policies\TicketMessagePolicyTest
+  Γ£ô it allows agent to view an internal note                                                 0.03s  
+  Γ£ô it denies requester from viewing an internal note                                        0.02s  
+  Γ£ô it allows requester to view a public message on their own ticket                         0.02s  
+  Γ£ô it allows agent to create a message on a visible ticket                                  0.02s  
+
+   PASS  Tests\Feature\Policies\TicketPolicyTest
+  Γ£ô it allows requester to view their own ticket                                             0.02s  
+  Γ£ô it denies requester from viewing another users ticket                                    0.02s  
+  Γ£ô it allows agent to view an unassigned new ticket                                         0.02s  
+  Γ£ô it allows agent to view a ticket assigned to them                                        0.02s  
+  Γ£ô it denies agent from viewing a ticket assigned to someone else that is not new           0.02s  
+  Γ£ô it allows admin to view any ticket                                                       0.02s  
+  Γ£ô it allows any user to create a ticket                                                    0.02s  
+  Γ£ô it allows agent to update a ticket                                                       0.02s  
+  Γ£ô it denies requester from updating a ticket                                               0.02s  
+  Γ£ô it denies all roles from deleting a ticket                                               0.02s  
+
+   PASS  Tests\Feature\ProfileTest
+  Γ£ô profile page is displayed                                                                3.54s  
+  Γ£ô profile information can be updated                                                       0.05s  
+  Γ£ô email verification status is unchanged when the email address is unchanged               0.04s  
+  Γ£ô user can delete their account                                                            0.03s  
+  Γ£ô correct password must be provided to delete account                                      0.04s  
+
+   PASS  Tests\Feature\Requester\MyTicketsTableTest
+  Γ£ô it requester sees only their own tickets                                                 1.14s  
+  Γ£ô it requester can search their tickets by title                                           0.04s  
+  Γ£ô it requester can filter tickets by status                                                0.03s  
+
+   PASS  Tests\Feature\Requester\TicketCreateTest
+  Γ£ô it requester can create a ticket                                                         0.53s  
+  Γ£ô it ticket creation fails without a title                                                 0.04s  
+  Γ£ô it ticket creation fails with title shorter than 5 chars                                 0.03s  
+  Γ£ô it ticket creation fails with title longer than 255 chars                                0.03s  
+  Γ£ô it agent cannot access requester ticket create page                                      0.02s  
+
+   FAIL  Tests\Feature\Requester\TicketDetailTest
+  Γ£ô it requester can view their own ticket detail                                            1.03s  
+  Γ£ô it requester cannot view another users ticket                                            0.03s  
+  Γ£ô it requester can post a public reply                                                     0.06s  
+  Γ£ô it requester cannot post reply on resolved ticket                                        0.03s  
+  Γ£ô it requester cannot see internal notes in thread                                         0.05s  
+  Γ¿» it requester cannot post reply on another users ticket                                   0.03s  
+
+   WARN  Tests\Feature\Scheduler\CheckOverdueTargetsJobTest
+  Γ£ô it finds tickets overdue for first response and notifies admins                          0.02s  
+  Γ£ô it does not notify for resolved tickets                                                  0.02s  
+  Γ£ô it notifies assigned agent for overdue ticket                                            0.02s  
+  Γ£ô it creates audit log for each overdue ticket                                             0.02s  
+  Γ£ô it does not notify if ticket has first_responded_at set                                  0.02s  
+  - it overdue notification not sent twice for same ticket in same run ΓåÆ Known limitation fΓÇª 0.02s  
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\Admin\AdminCrudTest > admin cannot delete a category that has tickets      
+  Expected: "WiSP9kYv07U0RdJafQzc" wire:name="admin.category-manager" class="p-6">\n
+    <div class="flex justify-between items-center mb-6">\n
+        <h1 class="text-2xl font-bold text-gray-900">Manage Categories</h1>\n
+        <button wire:click="$set('showForm', true)"\n
+            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">\n
+            Add Category\n
+        </button>\n
+    </div>\n
+\n
+    <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->\n
+    <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->\n
+    <div class="overflow-hidden border border-gray-200 rounded-lg shadow-sm bg-white">\n
+        <table class="min-w-full divide-y divide-gray-200">\n
+            <thead class="bg-gray-50">\n
+                <tr>\n
+                    <th scope="col"\n
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>\n
+                    <th scope="col"\n
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">\n
+                        Description</th>\n
+                    <th scope="col"\n
+                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions\n
+                    </th>\n
+                </tr>\n
+            </thead>\n
+            <tbody class="bg-white divide-y divide-gray-200">\n
+                <!--[if BLOCK]><![endif]-->                    <tr wire:key="cat-1">\n
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Used Category</td>\n
+                        <td class="px-6 py-4 text-sm text-gray-500">Earum dolores et facilis non id.</td>\n
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">\n
+                            <button wire:click="edit(1)"\n
+                                class="text-indigo-600 hover:text-indigo-900 mr-3">\n
+                                Edit\n
+                            </button>\n
+                            <button wire:click="delete(1)"\n
+                                wire:confirm="Are you sure you want to delete this category? This cannot be undone."\n
+                                class="text-red-600 hover:text-red-900">\n
+                                Delete\n
+                            </button>\n
+                        </td>\n
+                    </tr>\n
+                <!--[if ENDBLOCK]><![endif]-->            </tbody>\n
+        </table>\n
+    </div>\n
+</div>\n
+\n
+
+
+  To contain: Cannot delete a category that has tickets.
+
+  at vendor\livewire\livewire\src\Features\SupportTesting\MakesAssertions.php:14
+     10Γûò {
+     11Γûò     function assertSee($values, $escape = true, $stripInitialData = true)
+     12Γûò     {
+     13Γûò         foreach (Arr::wrap($values) as $value) {
+  Γ₧£  14Γûò             PHPUnit::assertStringContainsString(
+     15Γûò                 $escape ? e($value): $value,
+     16Γûò                 $this->html($stripInitialData)
+     17Γûò             );
+     18Γûò         }
+
+  1   vendor\livewire\livewire\src\Features\SupportTesting\MakesAssertions.php:14
+  2   tests\Feature\Admin\AdminCrudTest.php:116
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\Agent\AssignTicketActionTest > it automatically triages a new ticket whΓÇª   
+  Failed asserting that two variables reference the same object.
+--- Expected
++++ Actual
+@@ @@
+-App\Enums\TicketStatus Enum #37841 (Triaged, 'triaged')
++App\Enums\TicketStatus Enum #37846 (New, 'new')
+
+  at tests\Feature\Agent\AssignTicketActionTest.php:61
+     57Γûò     $agent = User::factory()->create(['role' => UserRole::Agent]);
+     58Γûò     $ticket = Ticket::factory()->create(['status' => TicketStatus::New ->value, 'assigned_to' => null]);
+     59Γûò 
+     60Γûò     $action = new AssignTicketAction();
+  Γ₧£  61Γûò     expect($ticket->status)->toBe(TicketStatus::Triaged);
+     62Γûò });
+     63Γûò 
+     64Γûò it('agent cannot assign ticket to a requester user', function (): void {
+     65Γûò     $admin = User::factory()->create(['role' => UserRole::Admin]);
+
+  1   tests\Feature\Agent\AssignTicketActionTest.php:61
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\Agent\AssignTicketActionTest > it agent cannot assign ticket to a requeΓÇª   
+  Failed asserting that exception of type "InvalidArgumentException" is thrown.
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\Requester\TicketDetailTest > it requester cannot post reply on anotherΓÇª    
+  Failed asserting that exception of type "ErrorException" matches expected exception "Illuminate\Auth\Access\AuthorizationException". Message was: "Trying to access array offset on null" at
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php:258
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\Mechanisms\HandleComponents\HandleComponents.php:178
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\LivewireManager.php:131
+D:\Insnapsys\agentdesk\vendor\livewire\volt\src\LivewireManager.php:35
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\Mechanisms\HandleRequests\HandleRequests.php:123
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Routing\ControllerDispatcher.php:46
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Routing\Route.php:265
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Routing\Route.php:211
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Routing\Router.php:822
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:180
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:137
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Routing\Router.php:821
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Routing\Router.php:800
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Routing\Router.php:764
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Routing\Router.php:753
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php:200
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:180
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:137
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php:175
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php:144
+D:\Insnapsys\agentdesk\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php:607
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\Features\SupportTesting\SubsequentRender.php:36
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\Features\SupportTesting\RequestBroker.php:30
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\Features\SupportTesting\SubsequentRender.php:35
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\Features\SupportTesting\Render.php:24
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\Features\SupportTesting\SubsequentRender.php:34
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\Features\SupportTesting\SubsequentRender.php:16
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\Features\SupportTesting\Testable.php:258
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\Features\SupportTesting\Testable.php:197
+D:\Insnapsys\agentdesk\vendor\livewire\livewire\src\Features\SupportTesting\Testable.php:176
+D:\Insnapsys\agentdesk\tests\Feature\Requester\TicketDetailTest.php:131
+.
+
+
+  Tests:    4 failed, 6 skipped, 135 passed (305 assertions)
+  Duration: 36.21s
+
