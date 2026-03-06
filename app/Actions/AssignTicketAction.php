@@ -8,6 +8,7 @@ use App\Enums\TicketStatus;
 use App\Models\AuditLog;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Notifications\TicketAssignedNotification;
 
 /**
  * ============================================================
@@ -46,6 +47,13 @@ final class AssignTicketAction
         }
 
         $ticket->update($updates);
+
+        // Notify the assigned agent if there is one
+        if ($assignee instanceof User) {
+            $assignee->notify(
+                new TicketAssignedNotification($ticket, $assignedBy)
+            );
+        }
 
         AuditLog::query()->create([
             'action' => $assignee instanceof User ? 'ticket.assigned' : 'ticket.unassigned',

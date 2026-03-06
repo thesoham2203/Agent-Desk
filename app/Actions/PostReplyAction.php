@@ -11,6 +11,7 @@ use App\Models\AuditLog;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
+use App\Notifications\RequesterRepliedNotification;
 use DomainException;
 
 /**
@@ -64,11 +65,22 @@ final class PostReplyAction
             'body' => $body,
         ]);
 
-        // 3. Do not update first_responded_at for requesters
-        // If author is an agent, we would update first response logic,
-        // but for requesters we do not update first_responded_at.
-        if ($author->role === UserRole::Requester) {
-            // First response is when an agent replies, not the requester
+        // 3. Handle notifications and SLA logic
+        // If a requester replied, notify the assigned agent
+        if ($author->role === UserRole::Requester && $ticket->assignee !== null) {
+            $ticket->assignee->notify(
+                new RequesterRepliedNotification($ticket, $author)
+            );
+        }
+
+        // If an AGENT replied, update first_responded_at:
+        if ($author->role === UserRole::Agent && $ticket->first_responded_at === null) {
+            /**
+             * Record the first agent response time.
+             * This is used by CheckOverdueTargetsJob to determine
+             * if the first response SLA has been met.
+             */
+            $ticket->update(['first_responded_at' => now()]);
         }
 
         // 4. Create AuditLog entry

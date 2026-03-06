@@ -8,6 +8,7 @@ use App\Enums\TicketStatus;
 use App\Models\AuditLog;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Notifications\TicketResolvedNotification;
 use DomainException;
 
 /**
@@ -50,6 +51,13 @@ final class ChangeTicketStatusAction
         }
 
         $ticket->update($updates);
+
+        // Notify requester when their ticket is resolved
+        if ($newStatus === TicketStatus::Resolved) {
+            $ticket->requester->notify(
+                new TicketResolvedNotification($ticket)
+            );
+        }
 
         AuditLog::query()->create([
             'action' => 'status.changed',
