@@ -441,9 +441,52 @@ composer test
 - composer test:types passes
 - All notification tests pass
 
-## Day 10 — Streaming UI + Rate Limiting
+## Day 10 — Admin Screens
 
-[To be filled in after Day 9 is complete]
+### Goal:
+Build all admin CRUD screens and the assign-to-specific-agent
+dropdown on the agent ticket detail view.
+
+### What you will build:
+- app/Livewire/Admin/CategoryManager.php
+- app/Livewire/Admin/MacroManager.php
+- app/Livewire/Admin/SlaConfigManager.php
+- app/Livewire/Admin/KbArticleManager.php
+- app/Livewire/Admin/AuditLogViewer.php
+- app/Livewire/Admin/AiRunsViewer.php
+- All corresponding blade views
+- Update app/Livewire/Agent/TicketDetail.php (assign dropdown)
+- Update routes/web.php (admin route group)
+- tests/Feature/Admin/AdminCrudTest.php
+- tests/Feature/Admin/AdminAuthTest.php
+
+### Files to read in order:
+1. app/Livewire/Admin/CategoryManager.php
+2. app/Livewire/Admin/MacroManager.php
+3. app/Livewire/Admin/SlaConfigManager.php
+4. app/Livewire/Admin/KbArticleManager.php
+5. app/Livewire/Admin/AuditLogViewer.php
+6. app/Livewire/Admin/AiRunsViewer.php
+7. routes/web.php (admin group)
+8. app/Livewire/Agent/TicketDetail.php (assign dropdown update)
+
+### Terminal commands to run:
+```bash
+php artisan migrate:fresh --seed
+php artisan serve
+# Log in as admin@agentdesk.test / password
+# Visit /admin/categories, /admin/macros, etc.
+composer test:types
+composer test
+```
+
+### How to verify Day 10 is complete:
+- Admin can create/edit/delete categories, macros, KB articles
+- Admin can update SLA config
+- Admin can view audit log and AI runs (read-only)
+- Agent can assign ticket to specific agent via dropdown
+- All admin routes redirect non-admins
+- composer test:types passes
 
 ## Day 11-12 — Admin Screens + Audit Log
 

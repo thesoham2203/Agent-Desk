@@ -33,7 +33,7 @@
                 <select wire:model.live="priorityFilter"
                     class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                     <option value="">All Priorities</option>
-                    @foreach(\App\Enums\TicketPriority::cases() as $priority)
+                    @foreach (\App\Enums\TicketPriority::cases() as $priority)
                         <option value="{{ $priority->value }}">{{ $priority->label() }}</option>
                     @endforeach
                 </select>
@@ -42,7 +42,7 @@
 
         <!-- TICKETS TABLE -->
         <div class="bg-white shadow rounded-lg overflow-hidden">
-            @if($this->tickets->isEmpty())
+            @if ($this->tickets->isEmpty())
                 <!-- EMPTY STATE -->
                 <div class="p-12 text-center">
                     <p class="text-gray-500 text-lg">No tickets in triage queue. Great work! 🎉</p>
@@ -75,7 +75,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($this->tickets as $ticket)
+                        @foreach ($this->tickets as $ticket)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     #{{ $ticket->id }}
@@ -92,10 +92,10 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
-                                                        @if($ticket->priority === \App\Enums\TicketPriority::Low) bg-gray-100 text-gray-800
-                                                        @elseif($ticket->priority === \App\Enums\TicketPriority::Medium) bg-blue-100 text-blue-800
-                                                        @elseif($ticket->priority === \App\Enums\TicketPriority::High) bg-orange-100 text-orange-800
-                                                        @elseif($ticket->priority === \App\Enums\TicketPriority::Urgent) bg-red-100 text-red-800
+                                                        @if ($ticket->priority === \App\Enums\TicketPriority::Low) bg-gray-100 text-gray-800
+                                                        @elseif ($ticket->priority === \App\Enums\TicketPriority::Medium) bg-blue-100 text-blue-800
+                                                        @elseif ($ticket->priority === \App\Enums\TicketPriority::High) bg-orange-100 text-orange-800
+                                                        @elseif ($ticket->priority === \App\Enums\TicketPriority::Urgent) bg-red-100 text-red-800
                                                         @endif
                                                     ">
                                         {{ $ticket->priority->label() }}

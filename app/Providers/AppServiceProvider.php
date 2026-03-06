@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Enums\UserRole;
 use App\Models\AiRun;
 use App\Models\Attachment;
 use App\Models\AuditLog;
@@ -13,6 +14,7 @@ use App\Models\Macro;
 use App\Models\SlaConfig;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
+use App\Models\User;
 use App\Policies\AiRunPolicy;
 use App\Policies\AttachmentPolicy;
 use App\Policies\AuditLogPolicy;
@@ -81,6 +83,16 @@ final class AppServiceProvider extends ServiceProvider
 
         // Primarily guards sensitive system-wide history review (Admin only)
         Gate::policy(AuditLog::class, AuditLogPolicy::class);
+
+        /**
+         * Administrative Gate Abilities
+         */
+        Gate::define('manage-categories', fn (User $user): bool => $user->role === UserRole::Admin);
+        Gate::define('manage-macros', fn (User $user): bool => $user->role === UserRole::Admin);
+        Gate::define('manage-sla-config', fn (User $user): bool => $user->role === UserRole::Admin);
+        Gate::define('manage-kb-articles', fn (User $user): bool => $user->role === UserRole::Admin);
+        Gate::define('view-audit-log', fn (User $user): bool => $user->role === UserRole::Admin);
+        Gate::define('view-ai-runs', fn (User $user): bool => $user->role === UserRole::Admin);
     }
 }
 

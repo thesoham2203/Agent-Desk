@@ -8,7 +8,7 @@
                 </h3>
                 <p class="mt-1 max-w-2xl text-sm text-gray-500">
                     Created {{ $ticket->created_at->format('M j, Y h:ia') }}
-                    @if($ticket->category)
+                    @if ($ticket->category)
                         • Category: {{ $ticket->category->name }}
                     @endif
                 </p>
@@ -40,9 +40,9 @@
                 {!! nl2br(e($ticket->body)) !!}
             </div>
 
-            @if($ticket->attachments->count() > 0)
+            @if ($ticket->attachments->count() > 0)
                 <div class="mt-4 flex flex-wrap gap-2">
-                    @foreach($ticket->attachments as $attachment)
+                    @foreach ($ticket->attachments as $attachment)
                         <a href="{{ route('attachments.download', $attachment) }}"
                             class="inline-flex items-center px-3 py-1 rounded-md bg-gray-100 text-xs font-medium text-gray-700 hover:bg-gray-200">
                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,7 +59,7 @@
 
     <!-- Thread Section -->
     <div class="space-y-6 mb-8">
-        @foreach($this->publicMessages as $message)
+        @foreach ($this->publicMessages as $message)
             <!-- Message Block -->
             <div
                 class="flex {{ $message->author->role === \App\Enums\UserRole::Requester ? 'justify-end' : 'justify-start' }}">
@@ -69,7 +69,7 @@
                         <span
                             class="text-xs font-semibold {{ $message->author->role === \App\Enums\UserRole::Requester ? 'text-blue-900' : 'text-gray-900' }}">
                             {{ $message->author->name }}
-                            @if($message->author->role !== \App\Enums\UserRole::Requester)
+                            @if ($message->author->role !== \App\Enums\UserRole::Requester)
                                 <span
                                     class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[10px] ml-2 font-medium">Support
                                     Agent</span>
@@ -85,9 +85,9 @@
                         {!! nl2br(e($message->body)) !!}
                     </div>
 
-                    @if($message->attachments->count() > 0)
+                    @if ($message->attachments->count() > 0)
                         <div class="mt-3 flex flex-wrap gap-2">
-                            @foreach($message->attachments as $attachment)
+                            @foreach ($message->attachments as $attachment)
                                 <a href="{{ route('attachments.download', $attachment) }}"
                                     class="inline-flex items-center px-2 py-1 rounded-md {{ $message->author->role === \App\Enums\UserRole::Requester ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }} text-[10px] font-medium transition-colors">
                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,11 +105,11 @@
     </div>
 
     <!-- Reply Form Section -->
-    @if($ticket->status !== \App\Enums\TicketStatus::Resolved)
+    @if ($ticket->status !== \App\Enums\TicketStatus::Resolved)
         <div class="bg-white shadow sm:rounded-lg px-4 py-5 sm:px-6">
             <h4 class="text-base font-medium text-gray-900 mb-4">Post a Reply</h4>
 
-            @if($replySent)
+            @if ($replySent)
                 <div class="rounded-md bg-green-50 p-4 mb-4">
                     <div class="flex">
                         <div class="flex-shrink-0">
@@ -147,7 +147,7 @@
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror
 
-                    @if(count($this->replyAttachments) > 0)
+                    @if (count($this->replyAttachments) > 0)
                         <p class="mt-1 text-xs text-blue-600 font-medium">
                             {{ count($this->replyAttachments) }} file(s) selected
                         </p>
