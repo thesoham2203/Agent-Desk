@@ -94,3 +94,22 @@ it('first_responded_at is NOT set when requester replies', function (): void {
 
     expect($ticket->fresh()->first_responded_at)->toBeNull();
 });
+
+it('TicketResolvedNotification contains correct ticket title', function (): void {
+    $admin = User::factory()->create(['role' => UserRole::Admin]);
+    $requester = User::factory()->create(['role' => UserRole::Requester]);
+
+    $ticket = Ticket::factory()->create([
+        'requester_id' => $requester->id,
+        'title' => 'My resolve title test',
+        'status' => TicketStatus::InProgress,
+    ]);
+
+    new ChangeTicketStatusAction()->execute($admin, $ticket, TicketStatus::Resolved);
+
+    Notification::assertSentTo($requester, TicketResolvedNotification::class, function ($notification) use ($requester): bool {
+        $data = $notification->toDatabase($requester);
+
+        return $data['ticket_title'] === 'My resolve title test';
+    });
+});

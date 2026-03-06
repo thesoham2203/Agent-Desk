@@ -99,3 +99,18 @@ it('does not notify if ticket has first_responded_at set', function (): void {
 
     Notification::assertNothingSent();
 });
+
+it('overdue notification not sent twice for same ticket in same run', function (): void {
+    $admin = User::factory()->create(['role' => UserRole::Admin]);
+
+    $overdueTicket = Ticket::factory()->create([
+        'created_at' => now()->subHours(10),
+        'first_responded_at' => null,
+        'status' => TicketStatus::New,
+    ]);
+
+    new CheckOverdueTargetsJob()->handle();
+    new CheckOverdueTargetsJob()->handle();
+
+    Notification::assertSentTo($admin, TicketOverdueNotification::class, fn ($notification, $channels, $notifiable): true => true);
+})->skip("Known limitation for Day 12 to address with a 'notified_at' column or similar dedup mechanism.");

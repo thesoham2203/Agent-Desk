@@ -62,6 +62,18 @@ it('ticket creation fails with title shorter than 5 chars', function (): void {
         ->assertHasErrors(['title' => 'min']);
 });
 
+it('ticket creation fails with title longer than 255 chars', function (): void {
+    /** @var User $requester */
+    $requester = User::factory()->create(['role' => UserRole::Requester]);
+
+    Livewire::actingAs($requester)
+        ->test(TicketCreateForm::class)
+        ->set('title', str_repeat('a', 256))
+        ->set('body', 'This is a valid body.')
+        ->call('submit')
+        ->assertHasErrors(['title' => 'max']);
+});
+
 it('agent cannot access requester ticket create page', function (): void {
     /** @var User $agent */
     $agent = User::factory()->create(['role' => UserRole::Agent]);

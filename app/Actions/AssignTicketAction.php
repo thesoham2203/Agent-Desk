@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Enums\TicketStatus;
+use App\Enums\UserRole;
 use App\Models\AuditLog;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\TicketAssignedNotification;
+use InvalidArgumentException;
 
 /**
  * ============================================================
@@ -37,6 +39,8 @@ final class AssignTicketAction
      */
     public function execute(User $assignedBy, Ticket $ticket, ?User $assignee): Ticket
     {
+        throw_if($assignee instanceof User && $assignee->role === UserRole::Requester, InvalidArgumentException::class, 'Cannot assign ticket to a requester.');
+
         $oldAssignedTo = $ticket->assigned_to;
 
         $updates = ['assigned_to' => $assignee?->id];

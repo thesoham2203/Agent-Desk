@@ -488,9 +488,25 @@ composer test
 - All admin routes redirect non-admins
 - composer test:types passes
 
-## Day 11-12 — Admin Screens + Audit Log
+## Day 11 — Tests Cleanup
 
-[To be filled in after Day 10 is complete]
+### Goal:
+Achieve a fully green, meaningful test suite.
+Every test must assert something real.
+PHPStan max level must pass on all files.
+
+### What you will do:
+- Audit every test file for empty or weak assertions
+- Add missing edge case tests
+- Fix any PHPStan errors introduced in Days 9-10
+- Run Rector and apply suggestions
+- Verify full parallel test suite passes
+
+### How to verify Day 11 is complete:
+- composer test:types → 0 errors
+- composer test → 0 failures, 0 errors
+- No test has only assertTrue(true) or similar empty assertion
+- Every feature from Days 5-10 has at least 2 test cases
 
 ## Day 13-14 — Tests + PHPStan
 

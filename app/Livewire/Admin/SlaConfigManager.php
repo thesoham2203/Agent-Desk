@@ -65,7 +65,7 @@ final class SlaConfigManager extends Component
         $this->authorize('manage-sla-config');
 
         $this->validate([
-            'firstResponseHours' => 'required|integer|min:1|max:168',
+            'firstResponseHours' => 'required|integer|min:1|max:168|lte:resolutionHours',
             'resolutionHours' => 'required|integer|min:1|max:720',
         ]);
 
