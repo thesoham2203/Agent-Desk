@@ -36,8 +36,9 @@
                     <div class="sm:col-span-1">
                         <dt class="text-sm font-medium text-gray-500">Requester</dt>
                         <dd class="mt-1 text-sm text-gray-900">
-                            {{ $ticket->requester->name }} <br>
-                            <span class="text-gray-500">{{ $ticket->requester->email }}</span>
+                            {{ $ticket->requester?->name ?? 'Unknown' }} <br>
+                            <span class="text-gray-500">{{ $ticket->requester?->email ?? 'no-email@example.com'
+                                }}</span>
                         </dd>
                     </div>
 
@@ -62,7 +63,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                @if (!$ticket->assignee || $ticket->assignee_id !== auth()->id())
+                                @if (!$ticket->assigned_to || $ticket->assigned_to !== auth()->id())
                                     <button wire:click="assignToSelf"
                                         class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none">
                                         Take
@@ -140,10 +141,10 @@
                         <div
                             class="flex justify-between items-center mb-4 pb-2 border-b @if ($message->type === \App\Enums\TicketMessageType::Internal) border-amber-200 @else border-gray-100 @endif">
                             <div class="flex items-center space-x-3">
-                                <span class="font-bold text-gray-900">{{ $message->author->name }}</span>
+                                <span class="font-bold text-gray-900">{{ $message->author?->name ?? 'Deleted User' }}</span>
                                 <span
                                     class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                    {{ $message->author->role->label() }}
+                                    {{ $message->author?->role?->label() ?? 'Unknown' }}
                                 </span>
                             </div>
                             <div class="text-sm text-gray-500 flex items-center space-x-3">

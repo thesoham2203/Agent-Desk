@@ -28,12 +28,16 @@ namespace App\Livewire\Admin;
 use App\Enums\AiRunStatus;
 use App\Enums\AiRunType;
 use App\Models\AiRun;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+/**
+ * @property-read LengthAwarePaginator<int, AiRun> $runs
+ */
 final class AiRunsViewer extends Component
 {
     use WithPagination;
@@ -63,21 +67,23 @@ final class AiRunsViewer extends Component
 
     /**
      * Retrieves a paginated list of AI runs based on active filters.
+     *
+     * @return LengthAwarePaginator<int, AiRun>
      */
     #[Computed]
     public function runs(): LengthAwarePaginator
     {
         return AiRun::query()
             ->with(['ticket', 'initiatedBy'])
-            ->when($this->statusFilter !== '', function ($query): void {
+            ->when($this->statusFilter !== '', function (Builder $query): void {
                 $status = AiRunStatus::tryFrom($this->statusFilter);
-                if ($status) {
+                if ($status instanceof AiRunStatus) {
                     $query->where('status', $status);
                 }
             })
-            ->when($this->typeFilter !== '', function ($query): void {
+            ->when($this->typeFilter !== '', function (Builder $query): void {
                 $type = AiRunType::tryFrom($this->typeFilter);
-                if ($type) {
+                if ($type instanceof AiRunType) {
                     $query->where('run_type', $type);
                 }
             })

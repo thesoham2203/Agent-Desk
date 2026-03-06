@@ -46,6 +46,10 @@ use Livewire\WithFileUploads;
  * It's cleaner here than enforcing permissions in the Blade view itself.
  * ============================================================
  */
+/**
+ * @property-read Collection<int, TicketMessage> $threadMessages
+ * @property-read Collection<int, User> $availableAgents
+ */
 #[Layout('layouts.app')]
 final class TicketDetail extends Component
 {
@@ -155,14 +159,19 @@ final class TicketDetail extends Component
 
     /**
      * Retrieves all available agents to assign tickets to.
+     *
+     * @return Collection<int, User>
      */
     #[Computed]
     public function availableAgents(): Collection
     {
-        return User::query()
+        /** @var Collection<int, User> $agents */
+        $agents = User::query()
             ->where('role', UserRole::Agent->value)
             ->orderBy('name')
             ->get(['id', 'name']);
+
+        return $agents;
     }
 
     /**
@@ -325,7 +334,9 @@ final class TicketDetail extends Component
         );
 
         $this->assignToAgentId = null;
-        $this->ticket = $this->ticket->fresh(['assignee', 'requester']);
+        /** @var Ticket $freshTicket */
+        $freshTicket = $this->ticket->fresh(['assignee', 'requester']);
+        $this->ticket = $freshTicket;
     }
 
     public function render(): View

@@ -31,6 +31,9 @@ use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
+/**
+ * @property-read Collection<int, KbArticle> $articles
+ */
 final class KbArticleManager extends Component
 {
     /**
@@ -55,6 +58,8 @@ final class KbArticleManager extends Component
 
     /**
      * Retrieves all KB articles ordered by title.
+     *
+     * @return Collection<int, KbArticle>
      */
     #[Computed]
     public function articles(): Collection

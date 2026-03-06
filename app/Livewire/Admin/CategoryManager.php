@@ -31,6 +31,9 @@ use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
+/**
+ * @property-read Collection<int, Category> $categories
+ */
 final class CategoryManager extends Component
 {
     /**
@@ -55,6 +58,8 @@ final class CategoryManager extends Component
 
     /**
      * Computed property to retrieve all categories ordered by name.
+     *
+     * @return Collection<int, Category>
      */
     #[Computed]
     public function categories(): Collection

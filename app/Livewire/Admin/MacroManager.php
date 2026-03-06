@@ -31,6 +31,9 @@ use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
+/**
+ * @property-read Collection<int, Macro> $macros
+ */
 final class MacroManager extends Component
 {
     /**
@@ -55,6 +58,8 @@ final class MacroManager extends Component
 
     /**
      * Computed property to get all macros ordered by title.
+     *
+     * @return Collection<int, Macro>
      */
     #[Computed]
     public function macros(): Collection

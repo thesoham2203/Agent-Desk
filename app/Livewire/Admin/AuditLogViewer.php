@@ -26,12 +26,16 @@ namespace App\Livewire\Admin;
  * ============================================================
  */
 use App\Models\AuditLog;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+/**
+ * @property-read LengthAwarePaginator<int, AuditLog> $logs
+ */
 final class AuditLogViewer extends Component
 {
     use WithPagination;
@@ -61,14 +65,16 @@ final class AuditLogViewer extends Component
 
     /**
      * Computed property that returns a paginated list of audit logs.
+     *
+     * @return LengthAwarePaginator<int, AuditLog>
      */
     #[Computed]
     public function logs(): LengthAwarePaginator
     {
         return AuditLog::query()
             ->with(['user', 'ticket'])
-            ->when($this->search !== '', fn ($query) => $query->where('action', 'like', '%'.$this->search.'%'))
-            ->when($this->actionFilter !== '', fn ($query) => $query->where('action', $this->actionFilter))
+            ->when($this->search !== '', fn (Builder $query) => $query->where('action', 'like', '%'.$this->search.'%'))
+            ->when($this->actionFilter !== '', fn (Builder $query) => $query->where('action', $this->actionFilter))
             ->latest()
             ->paginate($this->perPage);
     }
