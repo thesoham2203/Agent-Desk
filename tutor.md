@@ -380,9 +380,66 @@ QUEUE_CONNECTION=database
 ```
 
 
-## Day 9 — AI Subsystem: ReplyDraftAgent + KB Tool
+## Day 9 — Scheduler & Notifications
 
-[To be filled in after Day 8 is complete]
+### Goal:
+Build SLA overdue detection and notification system.
+A scheduled job finds overdue tickets and notifies
+the assigned agent and admin automatically.
+
+### What you will build:
+- app/Notifications/TicketAssignedNotification.php
+- app/Notifications/RequesterRepliedNotification.php
+- app/Notifications/TicketResolvedNotification.php
+- app/Notifications/TicketOverdueNotification.php
+- app/Jobs/CheckOverdueTargetsJob.php
+- Update routes/console.php (schedule registration)
+- Update app/Actions/AssignTicketAction.php (send notification)
+- Update app/Actions/PostReplyAction.php (send notification)
+- Update app/Actions/ChangeTicketStatusAction.php (send notification)
+- tests/Feature/Notifications/NotificationTest.php
+- tests/Feature/Scheduler/CheckOverdueTargetsJobTest.php
+
+### Core concepts you will learn:
+- Laravel Notifications: one class, multiple channels
+  (database + mail from same notification class)
+- Notifiable trait: what $user->notify() does internally
+- Database notifications: stored in notifications table,
+  read by UI to show notification bell/count
+- Laravel Scheduler: define schedule in code not cron
+  One cron entry: * * * * * php artisan schedule:run
+  Laravel handles the rest based on your schedule definitions
+- Why schedule:run every minute: Laravel checks internally
+  if each scheduled job should run at that moment
+
+### Files to read in order:
+1. app/Notifications/TicketAssignedNotification.php
+2. app/Notifications/RequesterRepliedNotification.php
+3. app/Notifications/TicketResolvedNotification.php
+4. app/Notifications/TicketOverdueNotification.php
+5. app/Jobs/CheckOverdueTargetsJob.php
+6. routes/console.php
+
+### Terminal commands to run:
+```bash
+php artisan notifications:table
+php artisan migrate
+php artisan migrate:fresh --seed
+# Test scheduler manually (runs due jobs immediately):
+php artisan schedule:run
+# Or run just the overdue job directly:
+php artisan tinker
+>>> App\Jobs\CheckOverdueTargetsJob::dispatchSync()
+composer test:types
+composer test
+```
+
+### How to verify Day 9 is complete:
+- php artisan schedule:run triggers CheckOverdueTargetsJob
+- 3 seeded overdue tickets each generate a notification
+- Notifications appear in the notifications table
+- composer test:types passes
+- All notification tests pass
 
 ## Day 10 — Streaming UI + Rate Limiting
 
