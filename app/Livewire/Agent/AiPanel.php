@@ -61,7 +61,6 @@ final class AiPanel extends Component
      * Whether the UI should poll for updates.
      * Calculated based on current run statuses.
      */
-    #[Computed]
     public function polling(): bool
     {
         return $this->isAnyRunInProgress();
@@ -98,7 +97,6 @@ final class AiPanel extends Component
             ->first();
     }
 
-    #[Computed]
     public function isAnyRunInProgress(): bool
     {
         $inProgressStatuses = [
@@ -123,8 +121,8 @@ final class AiPanel extends Component
         Gate::authorize('runAi', $ticket);
 
         // 2. Apply rate limiting to prevent API abuse:
-        $limitKey = 'ai-triage:'.auth()->id();
-        if (! RateLimiter::attempt($limitKey, 5, fn (): true => true)) {
+        $limitKey = 'ai-triage:' . auth()->id();
+        if (!RateLimiter::attempt($limitKey, 5, fn(): true => true)) {
             session()->flash('error', 'Too many AI requests. Please wait.');
 
             return;
@@ -141,7 +139,8 @@ final class AiPanel extends Component
         // 4. Dispatch the background Job:
         dispatch(new RunTicketTriageJob($aiRun->id));
 
-        // 5. Reload state: (No-op now, computed properties handled it)
+        // 5. Reload state: 
+        unset($this->latestTriageRun);
     }
 
     /**
@@ -155,8 +154,8 @@ final class AiPanel extends Component
         Gate::authorize('runAi', $ticket);
 
         // 2. Rate limit:
-        $limitKey = 'ai-reply:'.auth()->id();
-        if (! RateLimiter::attempt($limitKey, 5, fn (): true => true)) {
+        $limitKey = 'ai-reply:' . auth()->id();
+        if (!RateLimiter::attempt($limitKey, 5, fn(): true => true)) {
             session()->flash('error', 'Too many AI requests. Please wait.');
 
             return;
@@ -174,6 +173,7 @@ final class AiPanel extends Component
         dispatch(new DraftTicketReplyJob($aiRun->id));
 
         // 5. Reload state:
+        unset($this->latestReplyDraftRun);
     }
 
     /**
@@ -181,7 +181,9 @@ final class AiPanel extends Component
      */
     public function refresh(): void
     {
-        // Computed properties handle the refresh automatically.
+        // Explicitly clear the computed cache for a fresh DB look
+        unset($this->latestTriageRun);
+        unset($this->latestReplyDraftRun);
     }
 
     /**

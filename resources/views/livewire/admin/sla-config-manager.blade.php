@@ -1,77 +1,68 @@
-{{--
-/**
-* ============================================================
-* FILE: sla-config-manager.blade.php
-* LAYER: View
-* ============================================================
-*
-* WHAT IS THIS?
-* The settings screen for configuring SLA targets.
-*
-* WHY DOES IT EXIST?
-* To allow administrators to define the organization's service
-* delivery standards (response and resolution times).
-*
-* HOW IT FITS IN THE APP:
-* Rendered by App\Livewire\Admin\SlaConfigManager.
-*
-* LARAVEL CONCEPT EXPLAINED:
-* Flash messages (session('success')) provide temporary feedback to the user
-* after a successful server-side operation like saving configuration.
-* ============================================================
-*/
---}}
-
-<div class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+<div class="max-w-2xl">
+    {{-- Header --}}
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">SLA Configuration</h1>
-        <p class="text-sm text-gray-500 mt-1">
-            Define target response and resolution times for all tickets.
-        </p>
+        <h1 class="text-base font-medium text-gray-100">SLA Configuration</h1>
+        <p class="text-xs text-gray-500 mt-0.5">Define target response and resolution times</p>
     </div>
 
-    @if (session()->has('success'))
-        <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-400 text-green-700">
-            {{ session('success') }}
-        </div>
-    @endif
+    {{-- Form card --}}
+    <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 space-y-6">
 
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+        {{-- Messages --}}
+        @if (session()->has('success'))
+            <div class="p-3 bg-green-950/30 border border-green-900/50 rounded-md
+                            text-xs text-green-400">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <form wire:submit.prevent="update" class="space-y-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700">
-                    First Response Target (Hours)
+            {{-- First Response --}}
+            <div class="space-y-2">
+                <label class="block text-[10px] text-gray-600 uppercase tracking-wider">
+                    First Response Target
                 </label>
-                <div class="mt-1 flex items-center gap-4">
-                    <input type="number" wire:model="firstResponseHours"
-                        class="block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        min="1" max="168">
-                    <span class="text-sm text-gray-500">
+                <div class="flex items-center gap-4">
+                    <div class="relative w-28">
+                        <input type="number" wire:model="firstResponseHours"
+                            class="w-full bg-gray-800 border border-gray-700 text-gray-100
+                                      text-sm rounded-md pl-3 pr-8 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                        <span class="absolute right-3 top-2 text-[10px] text-gray-600 font-mono">h</span>
+                    </div>
+                    <p class="text-xs text-gray-500 leading-relaxed">
                         Target time to provide the first human response after ticket creation.
-                    </span>
+                    </p>
                 </div>
-                @error('firstResponseHours') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                @error('firstResponseHours')
+                    <p class="text-xs text-red-400 mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700">
-                    Resolution Target (Hours)
+            {{-- Resolution --}}
+            <div class="space-y-2 pt-4 border-t border-gray-800">
+                <label class="block text-[10px] text-gray-600 uppercase tracking-wider">
+                    Resolution Target
                 </label>
-                <div class="mt-1 flex items-center gap-4">
-                    <input type="number" wire:model="resolutionHours"
-                        class="block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        min="1" max="720">
-                    <span class="text-sm text-gray-500">
+                <div class="flex items-center gap-4">
+                    <div class="relative w-28">
+                        <input type="number" wire:model="resolutionHours"
+                            class="w-full bg-gray-800 border border-gray-700 text-gray-100
+                                      text-sm rounded-md pl-3 pr-8 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                        <span class="absolute right-3 top-2 text-[10px] text-gray-600 font-mono">h</span>
+                    </div>
+                    <p class="text-xs text-gray-500 leading-relaxed">
                         Target time to fully resolve the ticket (Set to Resolved status).
-                    </span>
+                    </p>
                 </div>
-                @error('resolutionHours') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                @error('resolutionHours')
+                    <p class="text-xs text-red-400 mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            <div class="pt-4 border-t border-gray-100 flex justify-end">
-                <button type="submit"
-                    class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition disabled:opacity-50"
-                    wire:loading.attr="disabled">
+            {{-- Submit --}}
+            <div class="pt-4 flex justify-end">
+                <button type="submit" wire:loading.attr="disabled" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs
+                               px-4 py-2 rounded-md transition-colors">
                     <span wire:loading.remove>Save Configuration</span>
                     <span wire:loading>Saving...</span>
                 </button>
@@ -79,25 +70,19 @@
         </form>
     </div>
 
-    <div class="mt-8 p-4 bg-blue-50 rounded-lg text-blue-800 text-sm">
-        <h3 class="font-bold flex items-center gap-2 mb-1">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                    clip-rule="evenodd"></path>
-            </svg>
-            System Impact
-        </h3>
-        Updating these values will affect the overdue status calculations for all active tickets. Changes are logged to
-        the System Audit Log.
+    {{-- System impact notice --}}
+    <div class="mt-6 p-4 bg-blue-950/20 border border-blue-900/30 rounded-lg">
+        <div class="flex gap-3">
+            <span class="text-blue-400 text-sm">ℹ</span>
+            <div>
+                <p class="text-[10px] text-blue-300 font-bold uppercase tracking-wider mb-1">
+                    System Impact
+                </p>
+                <p class="text-xs text-blue-300/70 leading-relaxed">
+                    Updating these values will affect overdue status calculations for all active tickets. Changes are
+                    logged to the System Audit Log.
+                </p>
+            </div>
+        </div>
     </div>
 </div>
-
-{{--
-* ============================================================
-* WHAT TO READ NEXT:
-* ============================================================
-* → resources/views/livewire/admin/kb-article-manager.blade.php
-* WHY: Continuing with administrative content management.
-* ============================================================
---}}
