@@ -141,7 +141,10 @@ final class AiPanel extends Component
         // 4. Dispatch the background Job:
         dispatch(new RunTicketTriageJob($aiRun->id));
 
-        // 5. Reload state: (No-op now, computed properties handled it)
+        // 5. Reload state:
+        unset($this->latestTriageRun);
+        unset($this->isAnyRunInProgress);
+        unset($this->polling);
     }
 
     /**
@@ -174,6 +177,9 @@ final class AiPanel extends Component
         dispatch(new DraftTicketReplyJob($aiRun->id));
 
         // 5. Reload state:
+        unset($this->latestReplyDraftRun);
+        unset($this->isAnyRunInProgress);
+        unset($this->polling);
     }
 
     /**
@@ -181,7 +187,11 @@ final class AiPanel extends Component
      */
     public function refresh(): void
     {
-        // Computed properties handle the refresh automatically.
+        // Explicitly clear the computed cache for a fresh DB look
+        unset($this->latestTriageRun);
+        unset($this->latestReplyDraftRun);
+        unset($this->isAnyRunInProgress);
+        unset($this->polling);
     }
 
     /**

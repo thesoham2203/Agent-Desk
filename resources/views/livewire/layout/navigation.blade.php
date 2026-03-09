@@ -15,113 +15,124 @@ new class extends Component {
     }
 }; ?>
 
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route(auth()->user()->role->dashboardRoute()) }}" wire:navigate>
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+<nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50" x-data="{ mobileMenuOpen: false }">
+    <div class="max-w-screen-xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
+
+        <div class="flex items-center gap-6">
+            {{-- Logo --}}
+            <a href="{{ route(auth()->user()->role->dashboardRoute()) }}"
+               wire:navigate
+               class="font-mono text-sm font-medium text-gray-100 no-underline shrink-0">
+                agent<span class="text-indigo-400">desk</span>
+            </a>
+
+            {{-- Divider (hidden on mobile) --}}
+            <div class="hidden md:block h-4 w-px bg-gray-700 shrink-0"></div>
+
+            {{-- Desktop Role-based nav links --}}
+            <div class="hidden md:flex items-center gap-1 overflow-x-auto">
+                @php $role = auth()->user()->role; @endphp
+
+                @if($role === \App\Enums\UserRole::Admin)
+                    @foreach([
+                        ['route' => 'admin.categories',  'label' => 'Categories'],
+                        ['route' => 'admin.macros',       'label' => 'Macros'],
+                        ['route' => 'admin.sla',          'label' => 'SLA'],
+                        ['route' => 'admin.kb-articles',  'label' => 'KB Articles'],
+                        ['route' => 'admin.audit-log',    'label' => 'Audit Log'],
+                        ['route' => 'admin.ai-runs',      'label' => 'AI Runs'],
+                    ] as $navLink)
+                        <a href="{{ route($navLink['route']) }}"
+                           wire:navigate
+                           class="text-xs px-3 py-1.5 rounded-md transition-colors whitespace-nowrap
+                                  {{ request()->routeIs($navLink['route'])
+                                      ? 'bg-gray-800 text-gray-100'
+                                      : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800' }}">
+                            {{ $navLink['label'] }}
+                        </a>
+                    @endforeach
+
+                @elseif($role === \App\Enums\UserRole::Agent)
+                    <a href="{{ route('agent.queue') }}"
+                       wire:navigate
+                       class="text-xs px-3 py-1.5 rounded-md transition-colors
+                              {{ request()->routeIs('agent.queue')
+                                  ? 'bg-gray-800 text-gray-100'
+                                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800' }}">
+                        Triage Queue
                     </a>
-                </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route(auth()->user()->role->dashboardRoute())"
-                        :active="request()->routeIs(auth()->user()->role->dashboardRoute())" wire:navigate>
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
+                @else
+                    <a href="{{ route('requester.tickets.index') }}"
+                       wire:navigate
+                       class="text-xs px-3 py-1.5 rounded-md transition-colors
+                              {{ request()->routeIs('requester.tickets.index')
+                                  ? 'bg-gray-800 text-gray-100'
+                                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800' }}">
+                        My Tickets
+                    </a>
+                    <a href="{{ route('requester.tickets.create') }}"
+                       wire:navigate
+                       class="text-xs px-3 py-1.5 rounded-md transition-colors
+                              {{ request()->routeIs('requester.tickets.create')
+                                  ? 'bg-gray-800 text-gray-100'
+                                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800' }}">
+                        New Ticket
+                    </a>
+                @endif
             </div>
+        </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <!-- Notification Bell -->
-                <livewire:layout.notification-bell />
-
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button
-                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name"
-                                x-on:profile-updated.window="name = $event.detail.name"></div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile')" wire:navigate>
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <button wire:click="logout" class="w-full text-start">
-                            <x-dropdown-link>
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </button>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden gap-2">
-                <livewire:layout.notification-bell />
-
-                <button @click="open = ! open"
-                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex"
-                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round"
-                            stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+        {{-- Right side --}}
+        <div class="flex items-center gap-3 shrink-0">
+            @livewire('shared.notification-bell')
+            
+            <div class="hidden md:flex items-center gap-3">
+                <a href="{{ route('profile') }}" 
+                   wire:navigate
+                   class="text-xs text-gray-500 hover:text-gray-300 transition-colors border-l border-gray-700 pl-3">
+                    {{ auth()->user()->name }}
+                </a>
+                <button wire:click="logout"
+                        class="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">
+                    Sign out
                 </button>
             </div>
+
+            {{-- Mobile menu button --}}
+            <button @click="mobileMenuOpen = !mobileMenuOpen" 
+                    class="md:hidden text-gray-500 hover:text-gray-300 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path x-show="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                    <path x-show="mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route(auth()->user()->role->dashboardRoute())"
-                :active="request()->routeIs(auth()->user()->role->dashboardRoute())" wire:navigate>
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
+    {{-- Mobile Menu --}}
+    <div x-show="mobileMenuOpen" 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         style="display: none;"
+         class="md:hidden bg-gray-900 border-b border-gray-800 px-6 py-4 space-y-3">
+        @php $role = auth()->user()->role; @endphp
+        
+        @if($role === \App\Enums\UserRole::Admin)
+            @foreach(['admin.categories' => 'Categories', 'admin.macros' => 'Macros', 'admin.sla' => 'SLA', 'admin.kb-articles' => 'KB Articles', 'admin.audit-log' => 'Audit Log', 'admin.ai-runs' => 'AI Runs'] as $route => $label)
+                <a href="{{ route($route) }}" wire:navigate class="block text-sm text-gray-400 hover:text-gray-200">{{ $label }}</a>
+            @endforeach
+        @elseif($role === \App\Enums\UserRole::Agent)
+            <a href="{{ route('agent.queue') }}" wire:navigate class="block text-sm text-gray-400 hover:text-gray-200">Triage Queue</a>
+        @else
+            <a href="{{ route('requester.tickets.index') }}" wire:navigate class="block text-sm text-gray-400 hover:text-gray-200">My Tickets</a>
+            <a href="{{ route('requester.tickets.create') }}" wire:navigate class="block text-sm text-gray-400 hover:text-gray-200">New Ticket</a>
+        @endif
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800"
-                    x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name"
-                    x-on:profile-updated.window="name = $event.detail.name"></div>
-                <div class="font-medium text-sm text-gray-500">{{ auth()->user()->email }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile')" wire:navigate>
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <button wire:click="logout" class="w-full text-start">
-                    <x-responsive-nav-link>
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </button>
-            </div>
+        <div class="pt-4 border-t border-gray-800 flex items-center justify-between">
+            <a href="{{ route('profile') }}" wire:navigate class="text-xs text-gray-500">{{ auth()->user()->name }}</a>
+            <button wire:click="logout" class="text-xs text-gray-500 cursor-pointer">Sign out</button>
         </div>
     </div>
 </nav>

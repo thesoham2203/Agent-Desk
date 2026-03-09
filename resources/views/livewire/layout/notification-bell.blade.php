@@ -104,7 +104,7 @@ new class extends Component
                                             {{ str_replace('.', ' ', $notification->data['type'] ?? 'Notification') }}
                                         </span>
                                         <span class="shrink-0 text-[10px] text-gray-400 font-medium ms-2">
-                                            {{ $notification->created_at->shortDiffForHumans() }}
+                                            {{ $notification->created_at->diffForHumans(short: true) }}
                                         </span>
                                     </div>
                                     <div @class(['text-sm line-clamp-1 mb-0.5', 'font-bold text-gray-900' => $notification->unread(), 'font-medium text-gray-700' => !$notification->unread()])>
