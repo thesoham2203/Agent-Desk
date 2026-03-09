@@ -23,7 +23,7 @@
 */
 --}}
 
-<div class="p-6">
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900">AI Execution Logs</h1>
         <p class="text-sm text-gray-500 mt-1">

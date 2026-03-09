@@ -1,97 +1,94 @@
-- Blade (this project) version: **[github.com/nunomaduro/laravel-starter-kit](https://github.com/nunomaduro/laravel-starter-kit)**
-- Inertia & React version: **[github.com/nunomaduro/laravel-starter-kit-inertia-react](https://github.com/nunomaduro/laravel-starter-kit-inertia-react)**
+# AgentDesk — AI-Powered Helpdesk
 
+AgentDesk is a modern, high-performance helpdesk application built with **Laravel 12**, **Livewire Volt**, and the **Laravel AI SDK**. It leverages **Groq** to provide near-instant AI triage and reply drafting for support tickets.
 
-<p align="center">
-    <a href="https://youtu.be/VhzP0XWGTC4" target="_blank">
-        <img src="/art/banner.png" alt="Overview Laravel Starter Kit" style="width:70%;">
-    </a>
-</p>
+## 🚀 Quick Start
 
-<p>
-    <a href="https://github.com/nunomaduro/laravel-starter-kit/actions"><img src="https://github.com/nunomaduro/laravel-starter-kit/actions/workflows/tests.yml/badge.svg" alt="Build Status"></a>
-    <a href="https://packagist.org/packages/nunomaduro/laravel-starter-kit"><img src="https://img.shields.io/packagist/dt/nunomaduro/laravel-starter-kit" alt="Total Downloads"></a>
-    <a href="https://packagist.org/packages/nunomaduro/laravel-starter-kit"><img src="https://img.shields.io/packagist/v/nunomaduro/laravel-starter-kit" alt="Latest Stable Version"></a>
-    <a href="https://packagist.org/packages/nunomaduro/laravel-starter-kit"><img src="https://img.shields.io/packagist/l/nunomaduro/laravel-starter-kit" alt="License"></a>
-</p>
+### 1. Prerequisites
+- **PHP 8.4+**
+- **Composer** & **Bun/NPM**
+- **SQLite** (default setup)
+- **Groq API Key** (Get one for free at [groq.com](https://console.groq.com/keys))
 
-**Laravel Starter Kit** is an ultra-strict, type-safe [Laravel](https://laravel.com) skeleton engineered for developers who refuse to compromise on code quality. This opinionated starter kit enforces rigorous development standards through meticulous tooling configuration and architectural decisions that prioritize type safety, immutability, and fail-fast principles.
-
-## Why This Starter Kit?
-
-Modern PHP has evolved into a mature, type-safe language, yet many Laravel projects still operate with loose conventions and optional typing. This starter kit changes that paradigm by enforcing:
-
-- **100% Type Coverage**: Every method, property, and parameter is explicitly typed
-- **Zero Tolerance for Code Smells**: Rector and PHPStan at maximum strictness catch issues before they become bugs
-- **Immutable-First Architecture**: Data structures favor immutability to prevent unexpected mutations
-- **Fail-Fast Philosophy**: Errors are caught at compile-time, not runtime
-- **Automated Code Quality**: Pre-configured tools ensure consistent, pristine code across your entire team
-- **Bun-Powered**: Leveraging Bun for blazing-fast dependency management...
-- **Just Better Laravel Defaults**: Thanks to **[Essentials](https://github.com/nunomaduro/essentials)** / strict models, auto eager loading, immutable dates, and more...
-
-This isn't just another Laravel boilerplate—it's a statement that PHP applications can and should be built with the same rigor as strongly-typed languages like Rust or TypeScript.
-
-## Getting Started
-
-> **Requires [PHP 8.4+](https://php.net/releases/)**, and [Bun](https://bun.sh).
-
-Create your type-safe Laravel application using [Composer](https://getcomposer.org):
-
+### 2. Installation
 ```bash
-composer create-project nunomaduro/laravel-starter-kit --prefer-dist example-app
+# Clone the repository
+git clone <repo-url> agentdesk
+cd agentdesk
+
+# Install dependencies
+composer install
+npm install
+
+# Setup environment
+cp .env.example .env
+php artisan key:generate
 ```
 
-### Initial Setup
-
-Navigate to your project and complete the setup:
-
+### 3. Database & Seeding
 ```bash
-cd example-app
-
-# Setup project
-composer setup
-
-# Start the development server
-composer dev
+# Run migrations and seed the initial data (Admins, Agents, Categories)
+php artisan migrate:fresh --seed
 ```
 
-### Optional: Browser Testing Setup
-
-If you plan to use Pest's browser testing capabilities:
-
-```bash
-bun add playwright
-bunx playwright install
+### 4. Groq Configuration
+Add your Groq API key to `.env`:
+```env
+AI_DEFAULT_PROVIDER=groq
+GROQ_API_KEY=gsk_...
 ```
 
-### Verify Installation
-
-Run the test suite to ensure everything is configured correctly:
-
+### 5. Start Development Servers
+You need three terminals running:
 ```bash
-composer test
+# Terminal 1: Web server
+php artisan serve
+
+# Terminal 2: Vite (styling/JS)
+npm run dev
+
+# Terminal 3: Queue worker (CRITICAL for AI runs)
+php artisan queue:listen
 ```
 
-You should see 100% test coverage and all quality checks passing.
+---
 
-## Available Tooling
+## 🛠 Available Scripts
 
-### Development
-- `composer dev` - Starts Laravel server, queue worker, log monitoring, and Vite dev server concurrently
+- `composer test` — Run the full suite (Pest, PHPStan Max, Pint, Rector)
+- `php artisan scheduler:work` — Run the background scheduler (for SLA checks)
+- `php artisan tinker` — Execute PHP directly in the app context
 
-### Code Quality
-- `composer lint` - Runs Rector (refactoring), Pint (PHP formatting), and Prettier (JS/TS formatting)
-- `composer test:lint` - Dry-run mode for CI/CD pipelines
+---
 
-### Testing
-- `composer test:type-coverage` - Ensures 100% type coverage with Pest
-- `composer test:types` - Runs PHPStan at level 9 (maximum strictness)
-- `composer test:unit` - Runs Pest tests with 100% code coverage requirement
-- `composer test` - Runs the complete test suite (type coverage, unit tests, linting, static analysis)
+## 🤖 AI Subsystem (Laravel AI SDK)
 
-### Maintenance
-- `composer update:requirements` - Updates all PHP and NPM dependencies to latest versions
+AgentDesk uses structured output and AI agents to streamline support:
 
-## License
+1. **TriageAgent**: Automatically categorizes, prioritizes, and summarizes incoming tickets. Runs immediately on ticket creation.
+2. **ReplyDraftAgent**: Generates high-quality drafts for support agents, grounded by KB snippets via the `SearchKnowledgeBaseTool`.
 
-**Laravel Starter Kit** was created by **[Nuno Maduro](https://x.com/enunomaduro)** under the **[MIT license](https://opensource.org/licenses/MIT)**.
+**Note:** All AI calls are faked in the test suite to preserve your Groq quota.
+
+---
+
+## ⏰ Background Jobs & Scheduler
+
+- `RunTicketTriageJob`: Orhcestrates the TriageAgent run.
+- `DraftTicketReplyJob`: Orchestrates the ReplyDraftAgent run.
+- `CheckOverdueTargetsJob`: Runs hourly (via `php artisan schedule:run`) to check for tickets breaching response/resolution targets.
+
+---
+
+## 📝 Demo/Evaluation Script (2 mins)
+
+Follow these steps to verify the core functionality:
+
+1. **Register as a Requester**: Go to `/register` and create a new ticket with an attachment.
+2. **AI Triage**: Log in as an Agent (`agent@example.com` / `password`). Go to **Triage Queue**. You will see the ticket has been automatically categorized and prioritized by AI.
+3. **Draft Reply**: Open the ticket. Click **Generate AI Reply** in the AI Panel. Watch the progress bar as it retrieves KB snippets and drafts a response.
+4. **Notification**: Mark the ticket as assigned. The new assignee will get a notification in their **Notification Bell**.
+5. **SLA Breach**: Run `php artisan app:check-sla` (custom command if available, or just wait for/trigger the job) to see overdue notifications trigger for old tickets.
+6. **Admin Audit**: Log in as Admin (`admin@example.com` / `password`). View the **Audit Log** to see every status change and **Export Tickets** to CSV.
+
+---

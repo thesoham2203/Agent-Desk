@@ -60,10 +60,11 @@ final class RunTicketTriageJob implements ShouldQueue
 
     /**
      * Execute the job.
-     * TriageAgent is automatically injected by Laravel's service container.
      */
-    public function handle(TriageAgent $agent): void
+    public function handle(): void
     {
+        $agent = new TriageAgent();
+
         // 1. Load the AiRun:
         $aiRun = AiRun::query()->findOrFail($this->aiRunId);
 
@@ -73,7 +74,7 @@ final class RunTicketTriageJob implements ShouldQueue
             $aiRun->update([
                 'status' => AiRunStatus::Running->value,
                 'provider' => 'groq',
-                'model' => config('groq.model', 'llama3-8b-8192'),
+                'model' => is_string(config('ai.providers.groq.model')) ? config('ai.providers.groq.model') : 'llama-3.3-70b-versatile',
             ]);
 
             // 3. Load the ticket:

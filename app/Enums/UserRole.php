@@ -54,6 +54,18 @@ enum UserRole: string
             self::Requester => 'Customer',
         };
     }
+
+    /**
+     * Returns the name of the dashboard route for this role.
+     */
+    public function dashboardRoute(): string
+    {
+        return match ($this) {
+            self::Admin => 'admin.audit-log',
+            self::Agent => 'agent.queue',
+            self::Requester => 'requester.tickets.index',
+        };
+    }
 }
 
 /**

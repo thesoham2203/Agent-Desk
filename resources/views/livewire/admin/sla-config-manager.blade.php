@@ -22,7 +22,7 @@
 */
 --}}
 
-<div class="p-6 max-w-2xl">
+<div class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900">SLA Configuration</h1>
         <p class="text-sm text-gray-500 mt-1">

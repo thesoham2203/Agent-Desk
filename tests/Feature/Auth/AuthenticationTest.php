@@ -24,7 +24,7 @@ test('users can authenticate using the login screen', function (): void {
 
     $component
         ->assertHasNoErrors()
-        ->assertRedirect(route('dashboard', absolute: false));
+        ->assertRedirect(route($user->role->dashboardRoute(), absolute: false));
 
     $this->assertAuthenticated();
 });
@@ -50,7 +50,7 @@ test('navigation menu can be rendered', function (): void {
 
     $this->actingAs($user);
 
-    $response = $this->get('/dashboard');
+    $response = $this->get(route($user->role->dashboardRoute()));
 
     $response
         ->assertOk()

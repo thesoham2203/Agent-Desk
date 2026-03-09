@@ -41,6 +41,7 @@ use App\Models\Ticket;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 final class AiPanel extends Component
@@ -51,52 +52,47 @@ final class AiPanel extends Component
     public int $ticketId;
 
     /**
+     * Whether the UI should poll for updates.
+     * Calculated based on current run statuses.
+     */
+    #[Computed]
+    public function polling(): bool
+    {
+        return $this->isAnyRunInProgress();
+    }
+
+    public function mount(int $ticketId): void
+    {
+        $this->ticketId = $ticketId;
+    }
+
+    /**
      * The most recent triage run for this ticket.
      */
-    public ?AiRun $latestTriageRun = null;
+    #[Computed]
+    public function latestTriageRun(): ?AiRun
+    {
+        return AiRun::query()
+            ->where('ticket_id', $this->ticketId)
+            ->where('run_type', AiRunType::Triage->value)
+            ->latest('id')
+            ->first();
+    }
 
     /**
      * The most recent reply draft run for this ticket.
      */
-    public ?AiRun $latestReplyDraftRun = null;
-
-    /**
-     * Whether the UI should poll for updates.
-     */
-    public bool $polling = false;
-
-    /**
-     * Initializes the component and loads initial state.
-     */
-    public function mount(int $ticketId): void
+    #[Computed]
+    public function latestReplyDraftRun(): ?AiRun
     {
-        $this->ticketId = $ticketId;
-        $this->loadLatestRuns();
-    }
-
-    /**
-     * Fetches the latest AI run records from the database.
-     */
-    public function loadLatestRuns(): void
-    {
-        $this->latestTriageRun = AiRun::query()
-            ->where('ticket_id', $this->ticketId)
-            ->where('run_type', AiRunType::Triage->value)
-            ->latest()
-            ->first();
-
-        $this->latestReplyDraftRun = AiRun::query()
+        return AiRun::query()
             ->where('ticket_id', $this->ticketId)
             ->where('run_type', AiRunType::ReplyDraft->value)
-            ->latest()
+            ->latest('id')
             ->first();
-
-        $this->polling = $this->isAnyRunInProgress();
     }
 
-    /**
-     * Checks if any AI task is currently Queued or Running.
-     */
+    #[Computed]
     public function isAnyRunInProgress(): bool
     {
         $inProgressStatuses = [
@@ -139,8 +135,7 @@ final class AiPanel extends Component
         // 4. Dispatch the background Job:
         dispatch(new RunTicketTriageJob($aiRun->id));
 
-        // 5. Reload state to trigger polling:
-        $this->loadLatestRuns();
+        // 5. Reload state: (No-op now, computed properties handled it)
     }
 
     /**
@@ -173,15 +168,14 @@ final class AiPanel extends Component
         dispatch(new DraftTicketReplyJob($aiRun->id));
 
         // 5. Reload state:
-        $this->loadLatestRuns();
     }
 
     /**
-     * Re-fetches records during polling.
+     * Re-renders the component.
      */
     public function refresh(): void
     {
-        $this->loadLatestRuns();
+        // Computed properties handle the refresh automatically.
     }
 
     /**
