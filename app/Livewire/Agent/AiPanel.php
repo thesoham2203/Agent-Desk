@@ -44,6 +44,12 @@ use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
+/**
+ * @property-read AiRun|null $latestTriageRun
+ * @property-read AiRun|null $latestReplyDraftRun
+ * @property-read bool $polling
+ * @property-read bool $isAnyRunInProgress
+ */
 final class AiPanel extends Component
 {
     /**
