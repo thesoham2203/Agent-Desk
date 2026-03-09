@@ -7,8 +7,8 @@ declare(strict_types=1);
  * Run in a separate terminal: php artisan queue:work --tries=3
  * Required .env: QUEUE_CONNECTION=database, GROQ_API_KEY=...
  */
-
 use App\Http\Controllers\AttachmentController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -29,9 +29,12 @@ Route::middleware(['auth'])
 // Default pages provided by Breeze — do not remove
 Route::view('/', 'welcome');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth'])
-    ->name('dashboard');
+Route::get('/dashboard', function () {
+    /** @var User $user */
+    $user = auth()->user();
+
+    return to_route($user->role->dashboardRoute());
+})->middleware(['auth'])->name('dashboard');
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])
@@ -91,6 +94,7 @@ Route::middleware(['auth', 'role:agent,admin'])
             ->name('tickets.show');
     });
 
+use App\Http\Controllers\Admin\ExportController;
 use App\Livewire\Admin\AiRunsViewer;
 use App\Livewire\Admin\AuditLogViewer;
 use App\Livewire\Admin\CategoryManager;
@@ -117,6 +121,9 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/kb-articles', KbArticleManager::class)->name('kb-articles');
         Route::get('/audit-log', AuditLogViewer::class)->name('audit-log');
         Route::get('/ai-runs', AiRunsViewer::class)->name('ai-runs');
+
+        // CSV Export of all tickets
+        Route::get('/export/tickets', [ExportController::class, 'tickets'])->name('export.tickets');
     });
 // Auth routes provided by Breeze — do not remove
 require __DIR__.'/auth.php';

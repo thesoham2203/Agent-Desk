@@ -46,6 +46,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read string $body
  * @property-read CarbonInterface|null $first_responded_at
  * @property-read CarbonInterface|null $resolved_at
+ * @property-read CarbonInterface|null $first_response_breached_at
+ * @property-read CarbonInterface|null $resolution_breached_at
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  * @property-read User $requester
@@ -72,6 +74,8 @@ final class Ticket extends Model
         'body',
         'first_responded_at',
         'resolved_at',
+        'first_response_breached_at',
+        'resolution_breached_at',
     ];
 
     /**
@@ -162,6 +166,8 @@ final class Ticket extends Model
             'body' => 'string',
             'first_responded_at' => 'datetime',
             'resolved_at' => 'datetime',
+            'first_response_breached_at' => 'datetime',
+            'resolution_breached_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

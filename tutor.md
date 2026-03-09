@@ -508,6 +508,45 @@ PHPStan max level must pass on all files.
 - No test has only assertTrue(true) or similar empty assertion
 - Every feature from Days 5-10 has at least 2 test cases
 
+## Day 12 — laravel/ai Migration + Exports + README
+
+### Goal:
+Migrate AI subsystem from community groq-laravel wrapper
+to Laravel's official laravel/ai package. Then complete
+remaining HLD items: CSV export, notification bell,
+role-based redirect, README.
+
+### Why laravel/ai?
+lucianotonet/groq-laravel is a community package.
+laravel/ai is Laravel's official first-party AI package
+introduced in Laravel 12. It supports multiple providers
+(Groq, OpenAI, Anthropic) through a unified facade.
+This is the production-grade approach.
+
+### What changes in Part A:
+- Remove lucianotonet/groq-laravel
+- Install laravel/ai
+- Update TriageAgent to use AI facade
+- Update ReplyDraftAgent to use AI facade
+- Update RunTicketTriageJob (no longer injects Groq)
+- Update DraftTicketReplyJob (no longer injects Groq)
+- Update all AI tests to use AI::fake()
+
+### Files to read in order:
+Part A:
+1. [app/AI/Agents/TriageAgent.php](app/AI/Agents/TriageAgent.php)
+2. [app/AI/Agents/ReplyDraftAgent.php](app/AI/Agents/ReplyDraftAgent.php)
+3. [app/Jobs/RunTicketTriageJob.php](app/Jobs/RunTicketTriageJob.php)
+4. [app/Jobs/DraftTicketReplyJob.php](app/Jobs/DraftTicketReplyJob.php)
+5. [tests/Feature/AI/TriageAgentTest.php](tests/Feature/AI/TriageAgentTest.php)
+6. [config/ai.php](config/ai.php)
+
+Part B:
+7. [app/Exports/AuditLogExport.php](app/Exports/AuditLogExport.php)
+8. [app/Http/Controllers/ExportController.php](app/Http/Controllers/ExportController.php)
+9. [app/Livewire/Shared/NotificationBell.php](app/Livewire/Shared/NotificationBell.php)
+10. [README.md](README.md)
+
 ## Day 13-14 — Tests + PHPStan
 
 [To be filled in after Day 12 is complete]

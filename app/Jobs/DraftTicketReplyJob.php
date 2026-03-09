@@ -59,10 +59,11 @@ final class DraftTicketReplyJob implements ShouldQueue
 
     /**
      * Execute the job.
-     * ReplyDraftAgent is automatically injected by Laravel's service container.
      */
-    public function handle(ReplyDraftAgent $agent): void
+    public function handle(): void
     {
+        $agent = resolve(ReplyDraftAgent::class);
+
         // 1. Load the AiRun:
         $aiRun = AiRun::query()->findOrFail($this->aiRunId);
 
@@ -72,7 +73,7 @@ final class DraftTicketReplyJob implements ShouldQueue
             $aiRun->update([
                 'status' => AiRunStatus::Running->value,
                 'provider' => 'groq',
-                'model' => config('groq.model', 'llama3-8b-8192'),
+                'model' => is_string(config('ai.providers.groq.model')) ? config('ai.providers.groq.model') : 'llama-3.3-70b-versatile',
             ]);
 
             // 3. Load the ticket environment:

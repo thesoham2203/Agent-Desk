@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\AI;
-
 use App\AI\Agents\ReplyDraftAgent;
 use App\AI\DTOs\KbSnippetDTO;
 use App\AI\DTOs\ReplyDraftInput;
@@ -11,50 +9,30 @@ use App\AI\DTOs\ReplyDraftResult;
 use App\AI\Tools\SearchKnowledgeBaseTool;
 use App\Models\Ticket;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use LucianoTonet\GroqPHP\Groq;
-use Mockery;
-use Tests\TestCase;
+use Mockery\MockInterface;
 
-final class ReplyDraftAgentTest extends TestCase
-{
-    use RefreshDatabase;
+beforeEach(function (): void {
+    // ReplyDraftAgent::fake() is now available since we added Promptable trait
+    ReplyDraftAgent::fake([
+        json_encode([
+            'draft' => 'Hello, please try using the reset link...',
+            'next_steps' => ['Send link'],
+            'risk_flags' => [],
+        ]),
+    ]);
+});
 
-    /**
-     * Test that the agent correctly generates a grounded response.
-     */
-    public function test_it_returns_reply_draft_result_dto_with_draft_and_next_steps(): void
-    {
-        // 1. Arrange: Create test data (ticket + author)
-        $user = User::factory()->create(['name' => 'John Doe']);
-        $ticket = Ticket::factory()->create([
-            'requester_id' => $user->id,
-            'title' => 'Cannot reset password',
-        ]);
+it('returns reply draft result DTO with draft and next steps', function (): void {
+    // 1. Arrange
+    $user = User::factory()->create(['name' => 'John Doe']);
+    $ticket = Ticket::factory()->create([
+        'requester_id' => $user->id,
+        'title' => 'Cannot reset password',
+    ]);
 
-        // 2. Mock Groq response:
-        $fakeResponse = [
-            'choices' => [
-                [
-                    'message' => [
-                        'content' => json_encode([
-                            'draft' => 'Hello, please try using the reset link...',
-                            'next_steps' => ['Send link'],
-                            'risk_flags' => [],
-                        ]),
-                    ],
-                ],
-            ],
-        ];
-
-        $mockGroq = Mockery::mock(Groq::class);
-        $mockGroq->shouldReceive('chat->completions->create')
-            ->once()
-            ->andReturn($fakeResponse);
-
-        // 3. Mock SearchKnowledgeBaseTool response:
-        $mockKbTool = Mockery::mock(SearchKnowledgeBaseTool::class);
-        $mockKbTool->shouldReceive('execute')
+    // Mock SearchKnowledgeBaseTool
+    $this->mock(SearchKnowledgeBaseTool::class, function (MockInterface $mock): void {
+        $mock->shouldReceive('execute')
             ->once()
             ->andReturn([
                 new KbSnippetDTO(
@@ -64,61 +42,50 @@ final class ReplyDraftAgentTest extends TestCase
                     relevanceScore: 1.0
                 ),
             ]);
+    });
 
-        $agent = new ReplyDraftAgent($mockGroq, $mockKbTool);
-        $input = new ReplyDraftInput($ticket->id, 'Summary', $user->id);
+    $agent = resolve(ReplyDraftAgent::class);
+    $input = new ReplyDraftInput($ticket->id, 'Summary', $user->id);
 
-        // 4. Act: Call the agent
-        $result = $agent->handle($input);
+    // 2. Act
+    $result = $agent->handle($input);
 
-        // 5. Assert: Verify the result DTO fields
-        $this->assertInstanceOf(ReplyDraftResult::class, $result);
-        $this->assertStringContainsString('Hello', $result->draft);
-        $this->assertContains('Send link', $result->nextSteps);
-    }
+    // 3. Assert
+    expect($result)->toBeInstanceOf(ReplyDraftResult::class);
+    expect($result->draft)->toContain('Hello');
+    expect($result->nextSteps)->toContain('Send link');
+});
 
-    /**
-     * Test handle behavior when the knowledge base returns nothing.
-     */
-    public function test_it_handles_empty_kb_results_gracefully(): void
-    {
-        // 1. Arrange
-        $user = User::factory()->create();
-        $ticket = Ticket::factory()->create([
-            'requester_id' => $user->id,
-            'title' => 'Unknown issue',
-        ]);
+it('handles empty KB results gracefully', function (): void {
+    // 1. Arrange
+    $user = User::factory()->create();
+    $ticket = Ticket::factory()->create([
+        'requester_id' => $user->id,
+        'title' => 'Unknown issue',
+    ]);
 
-        $mockGroq = Mockery::mock(Groq::class);
-        $mockGroq->shouldReceive('chat->completions->create')
+    ReplyDraftAgent::fake([
+        json_encode([
+            'draft' => 'No info found.',
+            'next_steps' => [],
+            'risk_flags' => ['no-grounding'],
+        ]),
+    ]);
+
+    // Mock SearchKnowledgeBaseTool returning empty
+    $this->mock(SearchKnowledgeBaseTool::class, function (MockInterface $mock): void {
+        $mock->shouldReceive('execute')
             ->once()
-            ->andReturn([
-                'choices' => [
-                    [
-                        'message' => [
-                            'content' => json_encode([
-                                'draft' => 'No info found.',
-                                'next_steps' => [],
-                                'risk_flags' => ['no-grounding'],
-                            ]),
-                        ],
-                    ],
-                ],
-            ]);
+            ->andReturn([]);
+    });
 
-        $mockKbTool = Mockery::mock(SearchKnowledgeBaseTool::class);
-        $mockKbTool->shouldReceive('execute')
-            ->once()
-            ->andReturn([]); // Empty result
+    $agent = resolve(ReplyDraftAgent::class);
+    $input = new ReplyDraftInput($ticket->id, '', $user->id);
 
-        $agent = new ReplyDraftAgent($mockGroq, $mockKbTool);
-        $input = new ReplyDraftInput($ticket->id, '', $user->id);
+    // 2. Act
+    $result = $agent->handle($input);
 
-        // 2. Act
-        $result = $agent->handle($input);
-
-        // 3. Assert
-        $this->assertInstanceOf(ReplyDraftResult::class, $result);
-        $this->assertContains('no-grounding', $result->riskFlags);
-    }
-}
+    // 3. Assert
+    expect($result)->toBeInstanceOf(ReplyDraftResult::class);
+    expect($result->riskFlags)->toContain('no-grounding');
+});

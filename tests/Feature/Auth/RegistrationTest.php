@@ -23,7 +23,7 @@ test('new users can register', function (): void {
 
     $component->call('register');
 
-    $component->assertRedirect(route('dashboard', absolute: false));
+    $component->assertRedirect(route('requester.tickets.index', absolute: false));
 
     $this->assertAuthenticated();
 });

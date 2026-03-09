@@ -66,6 +66,7 @@ final class CheckOverdueTargetsJob implements ShouldQueue
         // - Ticket was created more than first_response_hours ago
         $firstResponseOverdue = Ticket::query()
             ->whereNull('first_responded_at')
+            ->whereNull('first_response_breached_at')
             ->whereNotIn('status', [
                 TicketStatus::Resolved->value,
             ])
@@ -80,6 +81,7 @@ final class CheckOverdueTargetsJob implements ShouldQueue
         // - Ticket was created more than resolution_hours ago
         $resolutionOverdue = Ticket::query()
             ->whereNull('resolved_at')
+            ->whereNull('resolution_breached_at')
             ->whereNotIn('status', [
                 TicketStatus::Resolved->value,
             ])
@@ -106,6 +108,9 @@ final class CheckOverdueTargetsJob implements ShouldQueue
             User::query()->where('role', UserRole::Admin->value)
                 ->get()
                 ->each(fn (User $admin) => $admin->notify($notification));
+
+            // Record the breach timestamp to avoid double notification
+            $ticket->update(['first_response_breached_at' => $now]);
 
             // Audit log the breach with technical details.
             AuditLog::query()->create([
@@ -139,6 +144,9 @@ final class CheckOverdueTargetsJob implements ShouldQueue
             User::query()->where('role', UserRole::Admin->value)
                 ->get()
                 ->each(fn (User $admin) => $admin->notify($notification));
+
+            // Record the breach timestamp to avoid double notification
+            $ticket->update(['resolution_breached_at' => $now]);
 
             // Audit log the resolution breach.
             AuditLog::query()->create([
