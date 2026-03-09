@@ -522,4 +522,20 @@ $pages->assertNoJavascriptErrors()->assertNoConsoleLogs();
 | overflow-ellipsis | text-ellipsis |
 | decoration-slice | box-decoration-slice |
 | decoration-clone | box-decoration-clone |
+
+=== laravel/ai rules ===
+
+## Laravel AI SDK
+
+- This application uses the Laravel AI SDK (`laravel/ai`) for all AI functionality.
+- Activate the `developing-with-ai-sdk` skill when building, editing, updating, debugging, or testing AI agents, text generation, chat, streaming, structured output, tools, image generation, audio, transcription, embeddings, reranking, vector stores, files, conversation memory, or any AI provider integration (OpenAI, Anthropic, Gemini, Cohere, Groq, xAI, ElevenLabs, Jina, OpenRouter).
+
+=== livewire/volt rules ===
+
+# Livewire Volt
+
+- Single-file Livewire components: PHP logic and Blade templates in one file.
+- Always check existing Volt components to determine functional vs class-based style.
+- IMPORTANT: Always use `search-docs` tool for version-specific Volt documentation and updated code examples.
+- IMPORTANT: Activate `volt-development` every time you're working with a Volt or single-file component-related task.
 </laravel-boost-guidelines>
