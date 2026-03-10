@@ -6,12 +6,14 @@ namespace App\Actions;
 
 use App\Enums\AiRunStatus;
 use App\Enums\AiRunType;
+use App\Enums\TicketMessageType;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use App\Jobs\RunTicketTriageJob;
 use App\Models\AiRun;
 use App\Models\AuditLog;
 use App\Models\Ticket;
+use App\Models\TicketMessage;
 use App\Models\User;
 
 /**
@@ -47,8 +49,7 @@ final readonly class CreateTicketData
         public string $title,
         public string $body,
         public ?int $categoryId,
-    ) {
-    }
+    ) {}
 }
 
 final class CreateTicketAction
@@ -65,7 +66,7 @@ final class CreateTicketAction
         // 1. Create the Ticket
         $ticket = Ticket::query()->create([
             'requester_id' => $requester->id,
-            'status' => TicketStatus::New ->value,
+            'status' => TicketStatus::New->value,
             'priority' => TicketPriority::Medium->value,
             'title' => $data->title,
             'body' => $data->body,
@@ -73,10 +74,10 @@ final class CreateTicketAction
         ]);
 
         // 2. Create the initial TicketMessage (so it appears in the thread)
-        \App\Models\TicketMessage::query()->create([
+        TicketMessage::query()->create([
             'ticket_id' => $ticket->id,
             'author_id' => $requester->id,
-            'type' => \App\Enums\TicketMessageType::Public ->value,
+            'type' => TicketMessageType::Public->value,
             'body' => $data->body,
         ]);
 
