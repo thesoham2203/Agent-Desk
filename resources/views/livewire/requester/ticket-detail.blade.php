@@ -28,8 +28,8 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-2">
                                         <span class="w-6 h-6 rounded-full bg-gray-700
-                                                         flex items-center justify-center
-                                                         font-mono text-[10px] text-gray-300">
+                                                                     flex items-center justify-center
+                                                                     font-mono text-[10px] text-gray-300">
                                             {{ strtoupper(substr($message->author->name, 0, 1)) }}
                                         </span>
                                         <span class="text-xs font-medium text-gray-300">
@@ -37,7 +37,7 @@
                                         </span>
                                         @if(!$isRequester)
                                             <span class="font-mono text-[10px] bg-indigo-950
-                                                                 text-indigo-300 px-1.5 py-0.5 rounded">
+                                                                                 text-indigo-300 px-1.5 py-0.5 rounded">
                                                 Support
                                             </span>
                                         @endif
@@ -57,9 +57,9 @@
                                     <div class="mt-3 flex flex-wrap gap-2">
                                         @foreach($message->attachments as $attachment)
                                             <a href="{{ route('attachments.download', $attachment) }}" class="inline-flex items-center gap-1 font-mono text-[10px]
-                                                                  bg-gray-800 text-gray-400 hover:text-gray-200
-                                                                  px-2 py-1 rounded transition-colors">
-                                                ↓ {{ $attachment->filename }}
+                                                                                      bg-gray-800 text-gray-400 hover:text-gray-200
+                                                                                      px-2 py-1 rounded transition-colors">
+                                                ↓ {{ $attachment->original_name }}
                                             </a>
                                         @endforeach
                                     </div>

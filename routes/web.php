@@ -98,6 +98,7 @@ use App\Http\Controllers\Admin\ExportController;
 use App\Livewire\Admin\AiRunsViewer;
 use App\Livewire\Admin\AuditLogViewer;
 use App\Livewire\Admin\CategoryManager;
+use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\KbArticleManager;
 use App\Livewire\Admin\MacroManager;
 use App\Livewire\Admin\SlaConfigManager;
@@ -115,6 +116,7 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function (): void {
+        Route::get('/', Dashboard::class)->name('dashboard');
         Route::get('/categories', CategoryManager::class)->name('categories');
         Route::get('/macros', MacroManager::class)->name('macros');
         Route::get('/sla', SlaConfigManager::class)->name('sla');

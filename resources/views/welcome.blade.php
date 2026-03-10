@@ -63,7 +63,7 @@
                         class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-8 py-3 rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98]">
                         Start Free Trial
                     </a>
-                    <a href="https://github.com/laravel/ai" target="_blank"
+                    <a href="https://github.com/thesoham2203/Agent-Desk" target="_blank"
                         class="bg-gray-900 hover:bg-gray-800 text-gray-300 border border-gray-800 font-medium px-8 py-3 rounded-lg transition-all">
                         View Documentation
                     </a>

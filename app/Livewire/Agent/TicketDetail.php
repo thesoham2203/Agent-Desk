@@ -113,12 +113,12 @@ final class TicketDetail extends Component
     /**
      * Applies the AI-generated draft to the reply body.
      *
-     * @param  array{draft: string}  $payload  The draft content from the AI Panel.
+     * @param  string  $draft  The draft content from the AI Panel.
      */
     #[On('use-draft')]
-    public function applyDraft(array $payload): void
+    public function applyDraft(string $draft): void
     {
-        $this->replyBody = (string) $payload['draft'];
+        $this->replyBody = $draft;
 
         // Also ensure the public reply form is visible if it was hidden
         $this->showInternalNoteForm = false;

@@ -126,16 +126,18 @@ final class TicketCreateForm extends Component
             categoryId: $this->categoryId,
         ));
 
-        // Store each uploaded file as an Attachment
+        // 4. Link attachments to the initial message
+        $initialMessage = $ticket->messages()->first();
+
         foreach ($this->attachments as $file) {
             /** @var UploadedFile $file */
-            resolve(StoreAttachmentAction::class)->execute($ticket, null, $file);
+            resolve(StoreAttachmentAction::class)->execute($ticket, $initialMessage, $file);
         }
 
-        // 4. Update component state
+        // 5. Update component state
         $this->submitted = true;
 
-        // 5. Redirect cleanly
+        // 6. Redirect cleanly
         $this->redirect(route('requester.tickets.show', $ticket->id));
     }
 

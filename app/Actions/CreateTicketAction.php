@@ -6,12 +6,14 @@ namespace App\Actions;
 
 use App\Enums\AiRunStatus;
 use App\Enums\AiRunType;
+use App\Enums\TicketMessageType;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use App\Jobs\RunTicketTriageJob;
 use App\Models\AiRun;
 use App\Models\AuditLog;
 use App\Models\Ticket;
+use App\Models\TicketMessage;
 use App\Models\User;
 
 /**
@@ -71,7 +73,15 @@ final class CreateTicketAction
             'category_id' => $data->categoryId,
         ]);
 
-        // 2. Create an AuditLog entry
+        // 2. Create the initial TicketMessage (so it appears in the thread)
+        TicketMessage::query()->create([
+            'ticket_id' => $ticket->id,
+            'author_id' => $requester->id,
+            'type' => TicketMessageType::Public->value,
+            'body' => $data->body,
+        ]);
+
+        // 3. Create an AuditLog entry
         AuditLog::query()->create([
             'action' => 'ticket.created',
             'user_id' => $requester->id,
@@ -83,7 +93,7 @@ final class CreateTicketAction
             ],
         ]);
 
-        // 3. Dispatch RunTicketTriageJob
+        // 4. Dispatch RunTicketTriageJob
         // Every new ticket automatically gets triage queued.
         $aiRun = AiRun::query()->create([
             'ticket_id' => $ticket->id,
