@@ -547,11 +547,56 @@ Part B:
 9. [app/Livewire/Shared/NotificationBell.php](app/Livewire/Shared/NotificationBell.php)
 10. [README.md](README.md)
 
-## Day 13-14 — Tests + PHPStan
+## Day 13 — UI Update
+npm run build
 
-[To be filled in after Day 12 is complete]
+## Day 14 — Demo Prep
 
-## Day 15 — Demo Prep
+### Goal:
+Make the app 100% demo-ready. Every feature works,
+every test passes, every route is accessible.
+
+### The demo script (memorize this):
+```
+Step 1: Register/login as requester
+        → Create a ticket with detailed body
+        → Upload an attachment
+        → Verify ticket appears in My Tickets list
+
+Step 2: Login as agent
+        → See ticket in Triage Queue
+        → Assign to self
+        → Watch AI triage run automatically
+        → Run reply draft
+        → Click "Use this draft"
+        → Edit draft, send public reply
+        → Add an internal note
+        → Change status to InProgress
+
+Step 3: Login as requester
+        → See agent's reply in ticket thread
+        → Verify internal note is NOT visible
+        → Download the attachment
+        → Post a reply
+
+Step 4: Login as agent
+        → See requester replied notification in bell
+        → Change status to Resolved
+
+Step 5: Login as admin
+        → Visit /admin/audit-log
+        → See all actions recorded
+        → Export CSV
+        → Visit /admin/ai-runs
+        → See triage and reply draft runs
+        → Run php artisan schedule:run in terminal
+        → Show overdue notifications in bell
+
+Step 6: Show composer test output
+        → All green, 0 failures
+```
+
+## Day 15 — Final Presentation
 
 [To be filled in after Day 14 is complete]
 

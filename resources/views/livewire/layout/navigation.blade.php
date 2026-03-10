@@ -35,6 +35,7 @@ new class extends Component {
 
                 @if($role === \App\Enums\UserRole::Admin)
                     @foreach([
+                        ['route' => 'admin.dashboard',   'label' => 'Dashboard'],
                         ['route' => 'admin.categories',  'label' => 'Categories'],
                         ['route' => 'admin.macros',       'label' => 'Macros'],
                         ['route' => 'admin.sla',          'label' => 'SLA'],
@@ -120,7 +121,7 @@ new class extends Component {
         @php $role = auth()->user()->role; @endphp
         
         @if($role === \App\Enums\UserRole::Admin)
-            @foreach(['admin.categories' => 'Categories', 'admin.macros' => 'Macros', 'admin.sla' => 'SLA', 'admin.kb-articles' => 'KB Articles', 'admin.audit-log' => 'Audit Log', 'admin.ai-runs' => 'AI Runs'] as $route => $label)
+            @foreach(['admin.dashboard' => 'Dashboard', 'admin.categories' => 'Categories', 'admin.macros' => 'Macros', 'admin.sla' => 'SLA', 'admin.kb-articles' => 'KB Articles', 'admin.audit-log' => 'Audit Log', 'admin.ai-runs' => 'AI Runs'] as $route => $label)
                 <a href="{{ route($route) }}" wire:navigate class="block text-sm text-gray-400 hover:text-gray-200">{{ $label }}</a>
             @endforeach
         @elseif($role === \App\Enums\UserRole::Agent)

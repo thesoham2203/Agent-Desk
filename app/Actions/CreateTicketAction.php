@@ -47,7 +47,8 @@ final readonly class CreateTicketData
         public string $title,
         public string $body,
         public ?int $categoryId,
-    ) {}
+    ) {
+    }
 }
 
 final class CreateTicketAction
@@ -64,14 +65,22 @@ final class CreateTicketAction
         // 1. Create the Ticket
         $ticket = Ticket::query()->create([
             'requester_id' => $requester->id,
-            'status' => TicketStatus::New->value,
+            'status' => TicketStatus::New ->value,
             'priority' => TicketPriority::Medium->value,
             'title' => $data->title,
             'body' => $data->body,
             'category_id' => $data->categoryId,
         ]);
 
-        // 2. Create an AuditLog entry
+        // 2. Create the initial TicketMessage (so it appears in the thread)
+        \App\Models\TicketMessage::query()->create([
+            'ticket_id' => $ticket->id,
+            'author_id' => $requester->id,
+            'type' => \App\Enums\TicketMessageType::Public ->value,
+            'body' => $data->body,
+        ]);
+
+        // 3. Create an AuditLog entry
         AuditLog::query()->create([
             'action' => 'ticket.created',
             'user_id' => $requester->id,
@@ -83,7 +92,7 @@ final class CreateTicketAction
             ],
         ]);
 
-        // 3. Dispatch RunTicketTriageJob
+        // 4. Dispatch RunTicketTriageJob
         // Every new ticket automatically gets triage queued.
         $aiRun = AiRun::query()->create([
             'ticket_id' => $ticket->id,
