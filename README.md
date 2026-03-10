@@ -1,94 +1,163 @@
 # AgentDesk — AI-Powered Helpdesk
 
-AgentDesk is a modern, high-performance helpdesk application built with **Laravel 12**, **Livewire Volt**, and the **Laravel AI SDK**. It leverages **Groq** to provide near-instant AI triage and reply drafting for support tickets.
+AgentDesk is a high-performance, AI-empowered helpdesk application built with **Laravel 12**, **Livewire Volt**, and the **Laravel AI SDK**. It leverages the extremely fast **Groq API** to provide near-instant AI triage and reply drafting for support tickets, enhancing agent productivity without replacing the human touch.
 
-## 🚀 Quick Start
+---
+
+## 🚀 Quick Start & Installation
+
+Follow these instructions to set up the project on your local machine after a fresh clone.
 
 ### 1. Prerequisites
-- **PHP 8.4+**
-- **Composer** & **Bun/NPM**
-- **SQLite** (default setup)
-- **Groq API Key** (Get one for free at [groq.com](https://console.groq.com/keys))
+- **PHP 8.4+** 
+- **Composer**
+- **Node.js & NPM** (or Bun)
+- **SQLite** (Default database connection, zero-config)
+- **Groq API Key** (Get one for free at [console.groq.com](https://console.groq.com/keys))
 
-### 2. Installation
+### 2. Fresh Clone Setup
 ```bash
 # Clone the repository
 git clone <repo-url> agentdesk
 cd agentdesk
 
-# Install dependencies
+# Install PHP and Node dependencies
 composer install
 npm install
 
-# Setup environment
+# Setup environment variables
 cp .env.example .env
+
+# Generate application key
 php artisan key:generate
 ```
 
 ### 3. Database & Seeding
+AgentDesk comes with a rich seeder that provisions simulated Admins, Agents, Requesters, Categories, SLA Configs, Macros, Knowledge Base articles, and sample tickets.
+
 ```bash
-# Run migrations and seed the initial data (Admins, Agents, Categories)
+# Run migrations and seed the initial data
 php artisan migrate:fresh --seed
 ```
 
 ### 4. Groq Configuration
-Add your Groq API key to `.env`:
+To enable the AI subsystem, you must provide a valid Groq API key. Open your `.env` file and append/update the following:
+
 ```env
+# Tell the Laravel AI SDK to use Groq
 AI_DEFAULT_PROVIDER=groq
-GROQ_API_KEY=gsk_...
-```
 
-### 5. Start Development Servers
-You need three terminals running:
-```bash
-# Terminal 1: Web server
-php artisan serve
+# Your actual Groq API Key
+GROQ_API_KEY=gsk_your_groq_api_key_here
 
-# Terminal 2: Vite (styling/JS)
-npm run dev
-
-# Terminal 3: Queue worker (CRITICAL for AI runs)
-php artisan queue:listen
+# The model to use (recommended for agent tasks)
+GROQ_MODEL=llama-3.3-70b-versatile
 ```
 
 ---
 
-## 🛠 Available Scripts
+## 🏃‍♂️ Running the Application
 
-- `composer test` — Run the full suite (Pest, PHPStan Max, Pint, Rector)
-- `php artisan scheduler:work` — Run the background scheduler (for SLA checks)
-- `php artisan tinker` — Execute PHP directly in the app context
+AgentDesk relies on background queue workers for AI tasks and a scheduler for SLA monitoring. **To fully run the application locally, you should run these processes in separate terminal tabs:**
+
+### Terminal 1: Web Server
+```bash
+php artisan serve
+# or if you have Laravel Herd Installed then
+add the project to herd and run agestdesk.test in your browser
+```
+
+### Terminal 2: Frontend Assets (Vite)
+```bash
+npm run dev
+```
+
+### Terminal 3: Queue Worker (Crucial for AI)
+AI operations (Triage & Reply Drafting) are dispatched to the database queue to keep the UI snappy. You **must** run the queue worker to process them.
+```bash
+php artisan queue:work --tries=3
+```
+
+### Terminal 4: Scheduler (Optional but recommended for SLA)
+The scheduler checks for tickets breaching their Service Level Agreement (SLA) response and resolution targets.
+```bash
+php artisan schedule:work
+```
+*(Alternatively, you can manually trigger the specific job via Tinker: `php artisan tinker` -> `App\Jobs\CheckOverdueTargetsJob::dispatchSync();`)*
+
+---
+
+## 🛠 Testing & Quality Tools
+
+AgentDesk strictly enforces code quality and type safety.
+
+```bash
+# Run the complete test suite (Pest feature & unit tests)
+composer test
+or
+composer test --parallel (for faster execution)
+
+# Run PHPStan (Strict Type Checking - Level Max)
+composer test:types 
+or 
+composer test:types --parallel (for faster execution)
+
+# Run Type Coverage Analysis
+composer test:type-coverage
+
+# Run Code Formatting (Pint, Rector)
+composer lint
+```
+*Note: AI API calls are completely mocked/faked in the test suite, meaning running the tests will **not** consume your Groq quota.*
 
 ---
 
 ## 🤖 AI Subsystem (Laravel AI SDK)
 
-AgentDesk uses structured output and AI agents to streamline support:
+AgentDesk orchestrates AI operations securely using background jobs and strictly typed Data Transfer Objects (DTOs):
 
-1. **TriageAgent**: Automatically categorizes, prioritizes, and summarizes incoming tickets. Runs immediately on ticket creation.
-2. **ReplyDraftAgent**: Generates high-quality drafts for support agents, grounded by KB snippets via the `SearchKnowledgeBaseTool`.
+1. **TriageAgent (`app/AI/Agents/TriageAgent.php`)**: Automatically categorizes, prioritizes, and identifies escalation risks on new tickets. It runs instantly on ticket creation.
+2. **ReplyDraftAgent (`app/AI/Agents/ReplyDraftAgent.php`)**: Generates high-quality, professional drafts for support agents. It is grounded by articles retrieved via the `SearchKnowledgeBaseTool`.
 
-**Note:** All AI calls are faked in the test suite to preserve your Groq quota.
-
----
-
-## ⏰ Background Jobs & Scheduler
-
-- `RunTicketTriageJob`: Orhcestrates the TriageAgent run.
-- `DraftTicketReplyJob`: Orchestrates the ReplyDraftAgent run.
-- `CheckOverdueTargetsJob`: Runs hourly (via `php artisan schedule:run`) to check for tickets breaching response/resolution targets.
+All AI executions are recorded in the `ai_runs` database table for auditing, tracking the input hash, status, JSON output, and any encountered errors.
 
 ---
 
-## 📝 Demo/Evaluation Script (2 mins)
+## �️‍♂️ Demo Steps (2 Minutes)
 
-Follow these steps to verify the core functionality:
+To evaluate the application's core capabilities, follow this flow:
 
-1. **Register as a Requester**: Go to `/register` and create a new ticket with an attachment.
-2. **AI Triage**: Log in as an Agent (`agent@example.com` / `password`). Go to **Triage Queue**. You will see the ticket has been automatically categorized and prioritized by AI.
-3. **Draft Reply**: Open the ticket. Click **Generate AI Reply** in the AI Panel. Watch the progress bar as it retrieves KB snippets and drafts a response.
-4. **Notification**: Mark the ticket as assigned. The new assignee will get a notification in their **Notification Bell**.
-5. **SLA Breach**: Run `php artisan app:check-sla` (custom command if available, or just wait for/trigger the job) to see overdue notifications trigger for old tickets.
-6. **Admin Audit**: Log in as Admin (`admin@example.com` / `password`). View the **Audit Log** to see every status change and **Export Tickets** to CSV.
+### Step 1: Requester Experience
+1. **Login** or Register as a requester (e.g., `requester@agentdesk.test` / `password`).
+2. Navigate to **My Tickets** -> **Create Ticket**.
+3. Fill out a detailed support request and attach a file.
+4. Verify the ticket appears in your list.
 
----
+### Step 2: Agent Operations & AI Triage
+1. **Login** as a support agent (e.g., `agent@agentdesk.test` / `password`).
+2. Navigate to the **Triage Queue**. Notice the ticket you just created is automatically prioritized and categorized by the AI.
+3. Click **Assign to me** and open the ticket details.
+4. In the AI Panel on the right, click **Generate AI Reply**.
+5. Watch the polling UI update from *Queued* to *Running* to *Succeeded*, then review the AI's generated draft based on the Knowledge Base.
+6. Click **Use Draft**, edit the public reply if needed, attach a file, and click **Send Reply**.
+7. Optionally, add a private internal note for staff visibility.
+8. Change the ticket status to *In Progress*.
+
+### Step 3: Requester Follow-Up
+1. Switch back to the Requester account.
+2. Open the ticket and observe that the Agent's public reply is visible, but the internal note is completely hidden.
+3. Download the attachment provided by the agent.
+4. Reply back to the ticket.
+
+### Step 4: SLA & Notifications
+1. Switch back to the Agent account. Check the **Notification Bell** to see the "Requester Replied" alert.
+2. Resolve the ticket.
+3. In your terminal, manually trigger the SLA check: `php artisan schedule:run`.
+4. Check the Notification Bell again to see alerts for any seeded tickets that missed their targets.
+
+### Step 5: Admin Auditing
+1. **Login** as an admin (`admin@agentdesk.test` / `password`).
+2. Visit **Admin Dashboard** to see system stats.
+3. Visit **Audit Log** to trace all status changes, assignments, and configurations.
+4. Visit **AI Runs** to review the payloads and prompts from the background AI agents.
+5. Visit **Export** to download a comprehensive CSV of all tickets.

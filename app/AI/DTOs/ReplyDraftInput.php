@@ -37,6 +37,8 @@ final readonly class ReplyDraftInput
      */
     public function __construct(
         public int $ticketId,
+        public string $ticketTitle,
+        public string $threadFormatted,
         public string $threadSummary,
         public int $initiatedByUserId,
     ) {}

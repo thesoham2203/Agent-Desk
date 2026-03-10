@@ -17,7 +17,7 @@ new class extends Component {
     #[\Livewire\Attributes\Computed]
     public function unreadCount(): int
     {
-        return Auth::user()->unreadNotifications()->count();
+        return auth()->user()->fresh()->unreadNotifications()->count();
     }
 
     /**
@@ -26,7 +26,7 @@ new class extends Component {
     #[\Livewire\Attributes\Computed]
     public function recentNotifications(): \Illuminate\Support\Collection
     {
-        return Auth::user()->notifications()->latest()->limit(5)->get();
+        return auth()->user()->fresh()->notifications()->latest()->limit(5)->get();
     }
 
     /**
@@ -35,6 +35,10 @@ new class extends Component {
     public function toggleDropdown(): void
     {
         $this->showDropdown = !$this->showDropdown;
+
+        if ($this->showDropdown) {
+            $this->markAllRead();
+        }
     }
 
     /**
@@ -42,7 +46,7 @@ new class extends Component {
      */
     public function markAllRead(): void
     {
-        Auth::user()->unreadNotifications->each->markAsRead();
+        auth()->user()->fresh()->unreadNotifications->each->markAsRead();
     }
 }; ?>
 
@@ -60,8 +64,8 @@ new class extends Component {
 
         @if($this->unreadCount > 0)
             <span class="absolute -top-0.5 -right-0.5 flex items-center justify-center
-                             w-3.5 h-3.5 bg-red-500 text-white font-mono text-[9px]
-                             rounded-full leading-none">
+                                 w-3.5 h-3.5 bg-red-500 text-white font-mono text-[9px]
+                                 rounded-full leading-none">
                 {{ $this->unreadCount > 9 ? '9+' : $this->unreadCount }}
             </span>
         @endif
@@ -70,12 +74,12 @@ new class extends Component {
     {{-- Dropdown --}}
     @if($showDropdown)
         <div class="absolute right-0 top-full mt-2 w-72
-                        bg-gray-900 border border-gray-700 rounded-lg
-                        shadow-2xl shadow-black/50 z-50 overflow-hidden">
+                            bg-gray-900 border border-gray-700 rounded-lg
+                            shadow-2xl shadow-black/50 z-50 overflow-hidden">
 
             {{-- Header --}}
             <div class="flex items-center justify-between
-                            px-4 py-2.5 border-b border-gray-800">
+                                px-4 py-2.5 border-b border-gray-800">
                 <span class="text-xs font-medium text-gray-300">
                     Notifications
                 </span>
@@ -88,8 +92,8 @@ new class extends Component {
             <div class="max-h-64 overflow-y-auto divide-y divide-gray-800">
                 @forelse($this->recentNotifications as $notification)
                     <a href="{{ $notification->data['url'] ?? '#' }}" class="block px-4 py-3 transition-colors
-                                      hover:bg-gray-800
-                                      {{ $notification->read_at ? '' : 'bg-indigo-950/40' }}">
+                                              hover:bg-gray-800
+                                              {{ $notification->read_at ? '' : 'bg-indigo-950/40' }}">
                         <p class="text-xs text-gray-200 truncate mb-1">
                             {{ $notification->data['ticket_title'] ?? 'Notification' }}
                         </p>

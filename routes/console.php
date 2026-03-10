@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Schedule;
  * demonstrate it working without waiting an hour.
  * Change back to ->hourly() before final submission.
  */
-Schedule::job(new CheckOverdueTargetsJob())->everyMinute();
+Schedule::job(new CheckOverdueTargetsJob())->hourly();
 
 // To test manually without waiting:
 // php artisan schedule:run

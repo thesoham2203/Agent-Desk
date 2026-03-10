@@ -45,7 +45,7 @@ it('returns reply draft result DTO with draft and next steps', function (): void
     });
 
     $agent = resolve(ReplyDraftAgent::class);
-    $input = new ReplyDraftInput($ticket->id, 'Summary', $user->id);
+    $input = new ReplyDraftInput($ticket->id, $ticket->title, '', 'Summary', $user->id);
 
     // 2. Act
     $result = $agent->handle($input);
@@ -80,7 +80,7 @@ it('handles empty KB results gracefully', function (): void {
     });
 
     $agent = resolve(ReplyDraftAgent::class);
-    $input = new ReplyDraftInput($ticket->id, '', $user->id);
+    $input = new ReplyDraftInput($ticket->id, $ticket->title, '', '', $user->id);
 
     // 2. Act
     $result = $agent->handle($input);
