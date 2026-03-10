@@ -8,8 +8,6 @@ use App\AI\DTOs\KbSnippetDTO;
 use App\AI\DTOs\ReplyDraftInput;
 use App\AI\DTOs\ReplyDraftResult;
 use App\AI\Tools\SearchKnowledgeBaseTool;
-use App\Models\Ticket;
-use App\Models\TicketMessage;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Promptable;
 use RuntimeException;
@@ -81,27 +79,19 @@ final class ReplyDraftAgent implements Agent
      */
     public function handle(ReplyDraftInput $input): ReplyDraftResult
     {
-        // 1. Load the ticket with message history:
-        $ticket = Ticket::with('messages.author')->findOrFail($input->ticketId);
-
-        // 2. Build thread history from messages:
-        $thread = $ticket->messages
-            ->map(fn (TicketMessage $m): string => "[{$m->author->name}]: {$m->body}")
-            ->join("\n\n");
-
-        // 3. Search KB for relevant articles using the ticket title as a query:
-        $kbSnippets = $this->kbTool->execute($ticket->title);
+        // 1. Search KB for relevant articles using the ticket title as a query:
+        $kbSnippets = $this->kbTool->execute($input->ticketTitle);
         $kbContext = collect($kbSnippets)
             ->map(fn (KbSnippetDTO $s): string => "KB: {$s->title}\n{$s->excerpt}")
             ->join("\n\n");
 
-        // 4. Build user message:
-        $userMessage = "Ticket: {$ticket->title}\n\n"
-            ."Thread:\n{$thread}\n\n"
+        // 2. Build user message:
+        $userMessage = "Ticket: {$input->ticketTitle}\n\n"
+            ."Thread:\n{$input->threadFormatted}\n\n"
             ."Knowledge Base Context:\n{$kbContext}\n\n"
             ."Summary provided: {$input->threadSummary}";
 
-        // 5. Use Promptable's prompt() method
+        // 3. Use Promptable's prompt() method
         $response = $this->prompt($userMessage);
         $content = $response->text;
 

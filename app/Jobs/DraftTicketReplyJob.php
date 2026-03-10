@@ -38,6 +38,7 @@ use App\AI\DTOs\ReplyDraftInput;
 use App\Enums\AiRunStatus;
 use App\Enums\AiRunType;
 use App\Models\AiRun;
+use App\Models\TicketMessage;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -77,9 +78,14 @@ final class DraftTicketReplyJob implements ShouldQueue
             ]);
 
             // 3. Load the ticket environment:
-            $ticket = $aiRun->ticket;
+            $ticket = $aiRun->ticket()->with('messages.author')->firstOrFail();
 
-            // 4. Try to load threadSummary from triage run if it exists:
+            // 4. Build thread history from messages:
+            $threadFormatted = $ticket->messages
+                ->map(fn (TicketMessage $m): string => "[{$m->author->name}]: {$m->body}")
+                ->join("\n\n");
+
+            // 5. Try to load threadSummary from triage run if it exists:
             // This allows the ReplyDraftAgent to have a summary context.
             $latestTriage = AiRun::query()->where('ticket_id', $ticket->id)
                 ->where('run_type', AiRunType::Triage->value)
@@ -93,21 +99,43 @@ final class DraftTicketReplyJob implements ShouldQueue
                 $threadSummary = is_string($summaryValue) ? $summaryValue : '';
             }
 
-            // 5. Build ReplyDraftInput DTO:
+            // 6. Check for duplicate run using input_hash:
+            // This prevents redundant API calls if the ticket content hasn't changed.
+            $inputHash = hash('sha256', $ticket->title.$threadFormatted.$threadSummary);
+            $existing = AiRun::query()->where('ticket_id', $ticket->id)
+                ->where('run_type', AiRunType::ReplyDraft->value)
+                ->where('status', AiRunStatus::Succeeded->value)
+                ->where('input_hash', $inputHash)
+                ->first();
+
+            if ($existing !== null) {
+                $aiRun->update([
+                    'status' => AiRunStatus::Succeeded->value,
+                    'output_json' => $existing->output_json,
+                    'input_hash' => $inputHash,
+                ]);
+
+                return;
+            }
+
+            // 7. Build ReplyDraftInput DTO:
             $input = new ReplyDraftInput(
                 ticketId: (int) $ticket->id,
+                ticketTitle: (string) $ticket->title,
+                threadFormatted: $threadFormatted,
                 threadSummary: $threadSummary,
                 initiatedByUserId: (int) $aiRun->initiated_by_user_id,
             );
 
-            // 6. Call agent:
+            // 8. Call agent:
             // The agent performs the actual Groq API call and KB search.
             $result = $agent->handle($input);
 
-            // 7. Save result:
+            // 9. Save result:
             // We map the DTO back to an array for JSON storage in the DB.
             $aiRun->update([
                 'status' => AiRunStatus::Succeeded->value,
+                'input_hash' => $inputHash,
                 'output_json' => [
                     'draft' => $result->draft,
                     'next_steps' => $result->nextSteps,
