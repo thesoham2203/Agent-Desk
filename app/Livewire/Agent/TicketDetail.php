@@ -208,6 +208,7 @@ final class TicketDetail extends Component
 
         $this->ticket->load(['messages.author', 'messages.attachments', 'attachments']);
         $this->ticket->refresh();
+        unset($this->threadMessages);
     }
 
     /**
@@ -244,6 +245,7 @@ final class TicketDetail extends Component
 
         $this->ticket->load(['messages.author', 'messages.attachments', 'attachments']);
         $this->ticket->refresh();
+        unset($this->threadMessages);
     }
 
     /**
@@ -254,6 +256,12 @@ final class TicketDetail extends Component
         $this->authorize('update', $this->ticket);
 
         $status = TicketStatus::from($this->newStatus);
+
+        if ($status === $this->ticket->status) {
+            $this->addError('newStatus', 'Ticket is already in this status.');
+
+            return;
+        }
 
         /** @var User $user */
         $user = auth()->user();
@@ -292,9 +300,6 @@ final class TicketDetail extends Component
         $this->ticket->refresh();
     }
 
-    /**
-     * Self-assigns the ticket to the current agent.
-     */
     public function assignToSelf(): void
     {
         /** @var User $user */
@@ -337,6 +342,8 @@ final class TicketDetail extends Component
         /** @var Ticket $freshTicket */
         $freshTicket = $this->ticket->fresh(['assignee', 'requester']);
         $this->ticket = $freshTicket;
+
+        $this->redirect(route('agent.queue'), navigate: true);
     }
 
     public function render(): View

@@ -7,6 +7,7 @@ namespace App\Livewire\Requester;
 use App\Actions\PostReplyAction;
 use App\Actions\StoreAttachmentAction;
 use App\Enums\TicketMessageType;
+use App\Enums\UserRole;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
@@ -98,14 +99,20 @@ final class TicketDetail extends Component
 
     /**
      * Requesters only see public messages.
-     * Internal notes are filtered out at the component level
-     * as a second layer of defense (policy is the first).
+     * Admins see all messages.
      *
      * @return Collection<int, TicketMessage>
      */
     #[Computed]
     public function publicMessages(): Collection
     {
+        /** @var User $user */
+        $user = auth()->user();
+
+        if ($user->role === UserRole::Admin) {
+            return $this->ticket->messages;
+        }
+
         return $this->ticket->messages->filter(fn (TicketMessage $message): bool => $message->type === TicketMessageType::Public)->values();
     }
 

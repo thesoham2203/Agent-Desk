@@ -54,6 +54,14 @@ new class extends Component {
                     @endforeach
 
                 @elseif($role === \App\Enums\UserRole::Agent)
+                    <a href="{{ route('agent.my-tickets') }}"
+                       wire:navigate
+                       class="text-xs px-3 py-1.5 rounded-md transition-colors
+                              {{ request()->routeIs('agent.my-tickets')
+                                  ? 'bg-gray-800 text-gray-100'
+                                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800' }}">
+                        My Tickets
+                    </a>
                     <a href="{{ route('agent.queue') }}"
                        wire:navigate
                        class="text-xs px-3 py-1.5 rounded-md transition-colors
@@ -125,6 +133,7 @@ new class extends Component {
                 <a href="{{ route($route) }}" wire:navigate class="block text-sm text-gray-400 hover:text-gray-200">{{ $label }}</a>
             @endforeach
         @elseif($role === \App\Enums\UserRole::Agent)
+            <a href="{{ route('agent.my-tickets') }}" wire:navigate class="block text-sm text-gray-400 hover:text-gray-200">My Tickets</a>
             <a href="{{ route('agent.queue') }}" wire:navigate class="block text-sm text-gray-400 hover:text-gray-200">Triage Queue</a>
         @else
             <a href="{{ route('requester.tickets.index') }}" wire:navigate class="block text-sm text-gray-400 hover:text-gray-200">My Tickets</a>

@@ -15,8 +15,10 @@
         {{-- LEFT 3/4: Thread and controls --}}
         <div class="lg:col-span-3 space-y-4">
 
-            {{-- AI Panel --}}
-            @livewire('agent.ai-panel', ['ticketId' => $ticket->id])
+            {{-- AI Panel: Persistent until resolved --}}
+            @if($ticket->status !== \App\Enums\TicketStatus::Resolved)
+                @livewire('agent.ai-panel', ['ticketId' => $ticket->id])
+            @endif
 
             {{-- Thread --}}
             <div class="space-y-3">
@@ -36,14 +38,15 @@
                                             {{ $message->author->name }}
                                         </span>
                                         @if($isInternal)
-                                            <span class="font-mono text-[10px] bg-amber-950
-                                                                                                 text-amber-400 px-1.5 py-0.5 rounded">
+                                            <span
+                                                class="font-mono text-[10px] bg-amber-950
+                                                                                                                 text-amber-400 px-1.5 py-0.5 rounded">
                                                 Internal Note
                                             </span>
                                         @elseif($isAgent)
                                             <span
                                                 class="font-mono text-[10px] bg-indigo-950
-                                                                                                 text-indigo-300 px-1.5 py-0.5 rounded">
+                                                                                                                 text-indigo-300 px-1.5 py-0.5 rounded">
                                                 Agent
                                             </span>
                                         @endif
@@ -60,8 +63,8 @@
                                         @foreach($message->attachments as $attachment)
                                             <a href="{{ route('attachments.download', $attachment) }}"
                                                 class="inline-flex items-center gap-1 font-mono text-[10px]
-                                                                                                          bg-gray-800 text-gray-400 hover:text-gray-200
-                                                                                                          px-2 py-1 rounded transition-colors">
+                                                                                                                              bg-gray-800 text-gray-400 hover:text-gray-200
+                                                                                                                              px-2 py-1 rounded transition-colors">
                                                 ↓ {{ $attachment->original_name }}
                                             </a>
                                         @endforeach
@@ -72,46 +75,52 @@
             </div>
 
             {{-- Response Editor --}}
-            <div class="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
-                {{-- Tabs --}}
-                <div class="flex border-b border-gray-800">
-                    <button wire:click="$set('showInternalNoteForm', false)" class="px-4 py-2 text-xs font-medium transition-colors
-                                   {{ !$showInternalNoteForm
-    ? 'bg-gray-800 text-gray-100'
-    : 'text-gray-500 hover:text-gray-300' }}">
-                        Public Reply
-                    </button>
-                    <button wire:click="$set('showInternalNoteForm', true)" class="px-4 py-2 text-xs font-medium transition-colors
-                                   {{ $showInternalNoteForm
-    ? 'bg-amber-950/40 text-amber-400'
-    : 'text-gray-500 hover:text-gray-300' }}">
-                        Internal Note
-                    </button>
-                </div>
-
-                <div class="p-4">
-                    <textarea wire:model="{{ $showInternalNoteForm ? 'noteBody' : 'replyBody' }}" rows="5"
-                        placeholder="{{ $showInternalNoteForm ? 'Add a private note for staff...' : 'Respond to requester...' }}"
-                        class="w-full bg-gray-800 border border-gray-700 text-gray-100
-                                     text-sm rounded-md px-3 py-2 placeholder-gray-600
-                                     focus:outline-none focus:ring-1
-                                     {{ $showInternalNoteForm ? 'focus:ring-amber-500 focus:border-amber-500' : 'focus:ring-indigo-500 focus:border-indigo-500' }}
-                                     resize-none mb-4"></textarea>
-
-                    <div class="flex items-center justify-between">
-                        <input type="file" wire:model="replyAttachments" multiple class="text-xs text-gray-500
-                                      file:mr-2 file:py-1 file:px-2 file:rounded
-                                      file:border-0 file:text-xs file:bg-gray-700
-                                      file:text-gray-300 hover:file:bg-gray-600">
-
-                        <button wire:click="{{ $showInternalNoteForm ? 'addInternalNote' : 'postReply' }}"
-                            class="text-xs px-4 py-1.5 rounded-md text-white transition-colors
-                                       {{ $showInternalNoteForm ? 'bg-amber-700 hover:bg-amber-600' : 'bg-indigo-600 hover:bg-indigo-500' }}">
-                            {{ $showInternalNoteForm ? 'Save Note' : 'Send Reply' }}
+            @if($ticket->status !== \App\Enums\TicketStatus::Resolved)
+                <div class="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
+                    {{-- Tabs --}}
+                    <div class="flex border-b border-gray-800">
+                        <button wire:click="$set('showInternalNoteForm', false)" class="px-4 py-2 text-xs font-medium transition-colors
+                                       {{ !$showInternalNoteForm
+        ? 'bg-gray-800 text-gray-100'
+        : 'text-gray-500 hover:text-gray-300' }}">
+                            Public Reply
+                        </button>
+                        <button wire:click="$set('showInternalNoteForm', true)" class="px-4 py-2 text-xs font-medium transition-colors
+                                       {{ $showInternalNoteForm
+        ? 'bg-amber-950/40 text-amber-400'
+        : 'text-gray-500 hover:text-gray-300' }}">
+                            Internal Note
                         </button>
                     </div>
+
+                    <div class="p-4">
+                        <textarea wire:model="{{ $showInternalNoteForm ? 'noteBody' : 'replyBody' }}" rows="5"
+                            placeholder="{{ $showInternalNoteForm ? 'Add a private note for staff...' : 'Respond to requester...' }}"
+                            class="w-full bg-gray-800 border border-gray-700 text-gray-100
+                                         text-sm rounded-md px-3 py-2 placeholder-gray-600
+                                         focus:outline-none focus:ring-1
+                                         {{ $showInternalNoteForm ? 'focus:ring-amber-500 focus:border-amber-500' : 'focus:ring-indigo-500 focus:border-indigo-500' }}
+                                         resize-none mb-4"></textarea>
+
+                        <div class="flex items-center justify-between">
+                            <input type="file" wire:model="replyAttachments" multiple class="text-xs text-gray-500
+                                          file:mr-2 file:py-1 file:px-2 file:rounded
+                                          file:border-0 file:text-xs file:bg-gray-700
+                                          file:text-gray-300 hover:file:bg-gray-600">
+
+                            <button wire:click="{{ $showInternalNoteForm ? 'addInternalNote' : 'postReply' }}"
+                                class="text-xs px-4 py-1.5 rounded-md text-white transition-colors
+                                           {{ $showInternalNoteForm ? 'bg-amber-700 hover:bg-amber-600' : 'bg-indigo-600 hover:bg-indigo-500' }}">
+                                {{ $showInternalNoteForm ? 'Save Note' : 'Send Reply' }}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @else
+                <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 text-center">
+                    <p class="text-sm text-gray-400">This ticket has been resolved. No further replies can be added.</p>
+                </div>
+            @endif
         </div>
 
         {{-- RIGHT 1/4: Sidebar --}}
@@ -129,6 +138,9 @@
                             <option value="{{ $status->value }}">{{ $status->label() }}</option>
                         @endforeach
                     </select>
+                    @error('newStatus')
+                        <span class="text-[10px] text-red-500 mt-1 block">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 {{-- Priority --}}
@@ -161,8 +173,8 @@
                         </select>
                         @if(!$ticket->assigned_to || $ticket->assigned_to !== auth()->id())
                             <button wire:click="assignToSelf" class="w-full text-[10px] text-indigo-400 border
-                                                       border-indigo-900 bg-indigo-950/30 py-1
-                                                       rounded hover:bg-indigo-950 transition-colors">
+                                                           border-indigo-900 bg-indigo-950/30 py-1
+                                                           rounded hover:bg-indigo-950 transition-colors">
                                 Assign to me
                             </button>
                         @endif

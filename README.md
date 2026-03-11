@@ -4,6 +4,26 @@ AgentDesk is a high-performance, AI-empowered helpdesk application built with **
 
 ---
 
+## 🌟 Key Features
+
+### For Support Agents
+- **Triage Queue**: Instant view of new, unassigned tickets needing attention.
+- **My Tickets**: Personalized dashboard for tracking and managing your assigned workload.
+- **AI Panel**: Real-time AI-powered triage results and professional reply drafting grounded in your Knowledge Base.
+- **Internal Notes**: Private collaboration space completely hidden from customers.
+
+### For Administrators
+- **Executive Dashboard**: High-level system statistics and activity overview.
+- **Audit Logs**: Comprehensive trace of all status changes, assignments, and structural updates.
+- **AI Run Management**: Transparency into all AI executions, including input hashes and agent attribution.
+- **Dynamic Configuration**: Hot-swap Categories, SLA Targets, Macros, and Knowledge Base articles via a rich UI.
+
+### For Requesters
+- **Intuitive Support Portal**: Simple ticket creation and real-time thread tracking.
+- **Secure Attachments**: End-to-end private file management for sensitive data.
+
+---
+
 ## 🚀 Quick Start & Installation
 
 Follow these instructions to set up the project on your local machine after a fresh clone.
@@ -36,6 +56,8 @@ php artisan key:generate
 AgentDesk comes with a rich seeder that provisions simulated Admins, Agents, Requesters, Categories, SLA Configs, Macros, Knowledge Base articles, and sample tickets.
 
 ```bash
+# Create the SQLite database file
+New-Item .\database\database.sqlite -ItemType File
 # Run migrations and seed the initial data
 php artisan migrate:fresh --seed
 ```
@@ -70,6 +92,8 @@ add the project to herd and run agestdesk.test in your browser
 ### Terminal 2: Frontend Assets (Vite)
 ```bash
 npm run dev
+##  or if you have Laravel Herd Installed then
+npm run build
 ```
 
 ### Terminal 3: Queue Worker (Crucial for AI)
@@ -86,6 +110,16 @@ php artisan schedule:work
 *(Alternatively, you can manually trigger the specific job via Tinker: `php artisan tinker` -> `App\Jobs\CheckOverdueTargetsJob::dispatchSync();`)*
 
 ---
+
+## 🔐 Authentication & Roles
+
+AgentDesk uses Laravel Breeze with custom role-based access control. The seeder provisions these accounts:
+
+| Role       | Email                     | Password |
+|------------|---------------------------|----------|
+| Admin      | admin@agentdesk.test      | password |
+| Agent      | agent@agentdesk.test      | password |
+| Requester  | requester@agentdesk.test  | password |
 
 ## 🛠 Testing & Quality Tools
 
@@ -119,7 +153,7 @@ AgentDesk orchestrates AI operations securely using background jobs and strictly
 1. **TriageAgent (`app/AI/Agents/TriageAgent.php`)**: Automatically categorizes, prioritizes, and identifies escalation risks on new tickets. It runs instantly on ticket creation.
 2. **ReplyDraftAgent (`app/AI/Agents/ReplyDraftAgent.php`)**: Generates high-quality, professional drafts for support agents. It is grounded by articles retrieved via the `SearchKnowledgeBaseTool`.
 
-All AI executions are recorded in the `ai_runs` database table for auditing, tracking the input hash, status, JSON output, and any encountered errors.
+All AI executions are recorded in the `ai_runs` database table for auditing, tracking the initiator (agent), input hash, status, JSON output, and any encountered errors. This ensures transparency and accountability for all automated triage and draft generation.
 
 ---
 
@@ -136,8 +170,8 @@ To evaluate the application's core capabilities, follow this flow:
 ### Step 2: Agent Operations & AI Triage
 1. **Login** as a support agent (e.g., `agent@agentdesk.test` / `password`).
 2. Navigate to the **Triage Queue**. Notice the ticket you just created is automatically prioritized and categorized by the AI.
-3. Click **Assign to me** and open the ticket details.
-4. In the AI Panel on the right, click **Generate AI Reply**.
+3. Click **Assign to me**. You will be redirected to the **My Tickets** view where your assigned tickets are listed.
+4. Click on the ticket details.
 5. Watch the polling UI update from *Queued* to *Running* to *Succeeded*, then review the AI's generated draft based on the Knowledge Base.
 6. Click **Use Draft**, edit the public reply if needed, attach a file, and click **Send Reply**.
 7. Optionally, add a private internal note for staff visibility.
@@ -152,7 +186,8 @@ To evaluate the application's core capabilities, follow this flow:
 ### Step 4: SLA & Notifications
 1. Switch back to the Agent account. Check the **Notification Bell** to see the "Requester Replied" alert.
 2. Resolve the ticket.
-3. In your terminal, manually trigger the SLA check: `php artisan schedule:run`.
+3. Observe that after resolution, the reply editor is hidden for both the Agent and the Requester, preventing any further updates to the resolved ticket.
+4. In your terminal, manually trigger the SLA check: `php artisan schedule:run`.
 4. Check the Notification Bell again to see alerts for any seeded tickets that missed their targets.
 
 ### Step 5: Admin Auditing

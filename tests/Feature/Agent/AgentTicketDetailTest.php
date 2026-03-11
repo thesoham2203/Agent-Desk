@@ -81,11 +81,9 @@ it('invalid status transition throws exception', function (): void {
     $component = Livewire::test(TicketDetail::class, ['ticket' => $ticket])
         ->set('newStatus', TicketStatus::New->value);
 
-    // In Livewire testing, exceptions thrown in actions will bubble up.
-    // We expect a DomainException to be thrown here.
-    $this->expectException(DomainException::class);
-
-    $component->call('updateStatus');
+    // In Livewire testing, authorization failures often result in a 403 Forbidden status.
+    $component->call('updateStatus')
+        ->assertForbidden();
 });
 
 it('agent can add internal note', function (): void {

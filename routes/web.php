@@ -40,6 +40,7 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
+use App\Livewire\Agent\MyTickets;
 use App\Livewire\Agent\TicketDetail as AgentTicketDetail;
 use App\Livewire\Agent\TriageQueue;
 use App\Livewire\Requester\MyTicketsTable;
@@ -89,6 +90,9 @@ Route::middleware(['auth', 'role:agent,admin'])
         // Triage queue: all unassigned New tickets
         Route::get('/queue', TriageQueue::class)
             ->name('queue');
+        // My tickets: tickets assigned to the agent
+        Route::get('/my-tickets', MyTickets::class)
+            ->name('my-tickets');
         // Ticket detail: full management view for agents
         Route::get('/tickets/{ticket}', AgentTicketDetail::class)
             ->name('tickets.show');

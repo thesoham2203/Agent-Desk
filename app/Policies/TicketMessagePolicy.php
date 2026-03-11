@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Enums\TicketMessageType;
+use App\Enums\TicketStatus;
 use App\Enums\UserRole;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
@@ -73,6 +74,10 @@ final class TicketMessagePolicy
      */
     public function create(User $user, Ticket $ticket): bool
     {
+        if ($ticket->status === TicketStatus::Resolved) {
+            return false;
+        }
+
         return Gate::forUser($user)->allows('view', $ticket);
     }
 

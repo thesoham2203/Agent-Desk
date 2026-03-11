@@ -58,6 +58,12 @@ final class AiPanel extends Component
     public int $ticketId;
 
     /**
+     * Store the time the component was mounted to filter out older runs
+     * when the page is refreshed.
+     */
+    public string $pageLoadTime;
+
+    /**
      * Whether the UI should poll for updates.
      * Calculated based on current run statuses.
      */
@@ -70,6 +76,7 @@ final class AiPanel extends Component
     public function mount(int $ticketId): void
     {
         $this->ticketId = $ticketId;
+        $this->pageLoadTime = now()->toDateTimeString();
     }
 
     /**
@@ -94,6 +101,7 @@ final class AiPanel extends Component
         return AiRun::query()
             ->where('ticket_id', $this->ticketId)
             ->where('run_type', AiRunType::ReplyDraft->value)
+            ->where('created_at', '>=', $this->pageLoadTime)
             ->latest('id')
             ->first();
     }
