@@ -2,28 +2,6 @@
 
 AgentDesk is a high-performance, AI-empowered helpdesk application built with **Laravel 12**, **Livewire Volt**, and the **Laravel AI SDK**. It leverages the extremely fast **Groq API** to provide near-instant AI triage and reply drafting for support tickets, enhancing agent productivity without replacing the human touch.
 
----
-
-## 🌟 Key Features
-
-### For Support Agents
-- **Triage Queue**: Instant view of new, unassigned tickets needing attention.
-- **My Tickets**: Personalized dashboard for tracking and managing your assigned workload.
-- **AI Panel**: Real-time AI-powered triage results and professional reply drafting grounded in your Knowledge Base.
-- **Internal Notes**: Private collaboration space completely hidden from customers.
-
-### For Administrators
-- **Executive Dashboard**: High-level system statistics and activity overview.
-- **Audit Logs**: Comprehensive trace of all status changes, assignments, and structural updates.
-- **AI Run Management**: Transparency into all AI executions, including input hashes and agent attribution.
-- **Dynamic Configuration**: Hot-swap Categories, SLA Targets, Macros, and Knowledge Base articles via a rich UI.
-
-### For Requesters
-- **Intuitive Support Portal**: Simple ticket creation and real-time thread tracking.
-- **Secure Attachments**: End-to-end private file management for sensitive data.
-
----
-
 ## 🚀 Quick Start & Installation
 
 Follow these instructions to set up the project on your local machine after a fresh clone.
@@ -121,7 +99,7 @@ AgentDesk uses Laravel Breeze with custom role-based access control. The seeder 
 | Agent      | agent@agentdesk.test      | password |
 | Requester  | requester@agentdesk.test  | password |
 
-## 🛠 Testing & Quality Tools
+more entries in the SQLite Database in the database folder
 
 AgentDesk strictly enforces code quality and type safety.
 
@@ -157,7 +135,7 @@ All AI executions are recorded in the `ai_runs` database table for auditing, tra
 
 ---
 
-## �️‍♂️ Demo Steps (2 Minutes)
+## Demo Steps (2 Minutes)
 
 To evaluate the application's core capabilities, follow this flow:
 
