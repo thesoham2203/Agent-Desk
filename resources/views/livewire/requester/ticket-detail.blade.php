@@ -69,27 +69,33 @@
             </div>
 
             {{-- Reply form --}}
-            <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
-                <label class="block text-xs font-medium text-gray-500
-                              uppercase tracking-wider mb-2">
-                    Reply
-                </label>
-                <textarea wire:model="replyBody" rows="4" placeholder="Type your reply..." class="w-full bg-gray-800 border border-gray-700 text-gray-100
-                                 text-sm rounded-md px-3 py-2 placeholder-gray-600
-                                 focus:outline-none focus:ring-1 focus:ring-indigo-500
-                                 focus:border-indigo-500 resize-none mb-3"></textarea>
+            @if($ticket->status !== \App\Enums\TicketStatus::Resolved)
+                <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+                    <label class="block text-xs font-medium text-gray-500
+                                  uppercase tracking-wider mb-2">
+                        Reply
+                    </label>
+                    <textarea wire:model="replyBody" rows="4" placeholder="Type your reply..." class="w-full bg-gray-800 border border-gray-700 text-gray-100
+                                     text-sm rounded-md px-3 py-2 placeholder-gray-600
+                                     focus:outline-none focus:ring-1 focus:ring-indigo-500
+                                     focus:border-indigo-500 resize-none mb-3"></textarea>
 
-                <div class="flex items-center justify-between">
-                    <input type="file" wire:model="replyAttachments" multiple class="text-xs text-gray-500
-                                  file:mr-2 file:py-1 file:px-2 file:rounded
-                                  file:border-0 file:text-xs file:bg-gray-700
-                                  file:text-gray-300 hover:file:bg-gray-600">
-                    <button wire:click="postReply" class="bg-indigo-600 hover:bg-indigo-500 text-white
-                                   text-xs px-4 py-1.5 rounded-md transition-colors">
-                        Send Reply
-                    </button>
+                    <div class="flex items-center justify-between">
+                        <input type="file" wire:model="replyAttachments" multiple class="text-xs text-gray-500
+                                      file:mr-2 file:py-1 file:px-2 file:rounded
+                                      file:border-0 file:text-xs file:bg-gray-700
+                                      file:text-gray-300 hover:file:bg-gray-600">
+                        <button wire:click="postReply" class="bg-indigo-600 hover:bg-indigo-500 text-white
+                                       text-xs px-4 py-1.5 rounded-md transition-colors">
+                            Send Reply
+                        </button>
+                    </div>
                 </div>
-            </div>
+            @else
+                <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 text-center">
+                    <p class="text-sm text-gray-400">This ticket has been resolved. No further replies can be added.</p>
+                </div>
+            @endif
         </div>
 
         {{-- RIGHT: Sidebar --}}

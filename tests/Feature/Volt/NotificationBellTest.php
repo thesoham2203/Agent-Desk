@@ -7,11 +7,13 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\TicketAssignedNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 use Livewire\Volt\Volt;
 
 uses(RefreshDatabase::class);
 
 it('renders the notification bell component', function (): void {
+    Date::setTestNow(now());
     $user = User::factory()->create();
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 

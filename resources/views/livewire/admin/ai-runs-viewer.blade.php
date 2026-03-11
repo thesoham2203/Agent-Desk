@@ -49,6 +49,8 @@
                     <th class="px-4 py-2.5 text-left text-xs font-medium
                                text-gray-500 uppercase tracking-wider">Type</th>
                     <th class="px-4 py-2.5 text-left text-xs font-medium
+                               text-gray-500 uppercase tracking-wider w-32">Agent</th>
+                    <th class="px-4 py-2.5 text-left text-xs font-medium
                                text-gray-500 uppercase tracking-wider w-32">Status</th>
                     <th class="px-4 py-2.5 text-left text-xs font-medium
                                text-gray-500 uppercase tracking-wider w-32">Model</th>
@@ -70,6 +72,9 @@
                         <td class="px-4 py-3 text-xs text-gray-300">
                             {{ $run->run_type->label() }}
                         </td>
+                        <td class="px-4 py-3 text-xs text-gray-400">
+                            {{ $run->initiatedBy?->name ?? 'System' }}
+                        </td>
                         <td class="px-4 py-3">
                             @php
                                 $statusStyle = match ($run->status) {
@@ -84,7 +89,7 @@
                             </span>
                         </td>
                         <td class="px-4 py-3 font-mono text-[10px] text-gray-600">
-                            {{ $run->model_name ?: 'default' }}
+                            {{ $run->model ?: 'default' }}
                         </td>
                         <td class="px-4 py-3 text-right font-mono text-[10px] text-gray-500">
                             {{ $run->created_at->diffForHumans(short: true) }}

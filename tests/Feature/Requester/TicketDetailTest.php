@@ -77,14 +77,11 @@ it('requester cannot post reply on resolved ticket', function (): void {
         'status' => TicketStatus::Resolved->value,
     ]);
 
-    // TicketDetail action (PostReplyAction) throws a DomainException
-    $this->expectException(DomainException::class);
-    $this->expectExceptionMessage('Cannot reply to resolved ticket.');
-
     Livewire::actingAs($requester)
         ->test(TicketDetail::class, ['ticketId' => $ticket->id])
         ->set('replyBody', 'Trying to reply to resolved')
-        ->call('postReply');
+        ->call('postReply')
+        ->assertForbidden();
 });
 
 it('requester cannot see internal notes in thread', function (): void {

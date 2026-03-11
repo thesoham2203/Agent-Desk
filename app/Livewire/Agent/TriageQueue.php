@@ -99,8 +99,10 @@ final class TriageQueue extends Component
             $user
         );
 
-        // Dispatch event so other components on the same page can refresh if needed.
         $this->dispatch('ticket-assigned');
+
+        // Redirect to My Tickets list so the agent sees their claimed work immediately.
+        $this->redirect(route('agent.my-tickets'), navigate: true);
     }
 
     /**

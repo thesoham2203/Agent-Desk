@@ -85,32 +85,48 @@ final class TicketPolicy
     /**
      * HLD §8.2: Only Agent or Admin can change status/assign/tag.
      */
-    public function update(User $user): bool
+    public function update(User $user, Ticket $ticket): bool
     {
+        if ($ticket->status === TicketStatus::Resolved) {
+            return false;
+        }
+
         return $user->role === UserRole::Agent || $user->role === UserRole::Admin;
     }
 
     /**
      * HLD §8.2: Only Agent or Admin can add internal notes.
      */
-    public function addInternalNote(User $user): bool
+    public function addInternalNote(User $user, Ticket $ticket): bool
     {
+        if ($ticket->status === TicketStatus::Resolved) {
+            return false;
+        }
+
         return $user->role === UserRole::Agent || $user->role === UserRole::Admin;
     }
 
     /**
      * HLD §8.2: Only Agent or Admin can assign/unassign tickets.
      */
-    public function assign(User $user): bool
+    public function assign(User $user, Ticket $ticket): bool
     {
+        if ($ticket->status === TicketStatus::Resolved) {
+            return false;
+        }
+
         return $user->role === UserRole::Agent || $user->role === UserRole::Admin;
     }
 
     /**
      * HLD §8.2: Only SupportAgent or Admin can trigger AI tools.
      */
-    public function runAi(User $user): bool
+    public function runAi(User $user, Ticket $ticket): bool
     {
+        if ($ticket->status === TicketStatus::Resolved) {
+            return false;
+        }
+
         return $user->role === UserRole::Agent;
     }
 
